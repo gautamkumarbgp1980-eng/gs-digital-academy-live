@@ -526,7 +526,7 @@ allIds.add(userId);
 }
 }
 
-totalEarning+=state.totalEarning;
+totalEarning = totalEarning + BigInt(state.totalEarning.toString());
 
 tableHtml+=`<tr>
 <td>${level}</td>
