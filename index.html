@@ -4,580 +4,694 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>B-TITAN Live Team Explorer</title>
+<title>B-TITAN Live Team Counter</title>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 <style>
-:root{
---bg:#080d18;--panel:#111b2d;--line:#263650;
---gold:#e7b84b;--muted:#9aabc2;
---blue:#4c9cff;--green:#32c987;
-}
 *{box-sizing:border-box}
 body{
-margin:0;background:linear-gradient(145deg,#080d18,#101a2d);
-color:#f4f7fb;font:15px system-ui,Arial,sans-serif
+margin:0;background:#070d19;color:#fff;
+font-family:Arial,sans-serif
 }
-.wrap{max-width:1050px;margin:auto;padding:22px 14px 50px}
-.top{display:flex;gap:12px;align-items:center;
-justify-content:space-between;flex-wrap:wrap}
-h1{font-size:clamp(24px,5vw,36px);margin:0;color:var(--gold)}
-h2{font-size:18px;margin:0 0 12px}
-.sub{color:var(--muted);margin:7px 0 18px}
+header{
+background:linear-gradient(135deg,#111b31,#27314b);
+text-align:center;padding:25px 12px;
+border-bottom:2px solid #dcb64c
+}
+h1{color:#f2c65a;margin:0;font-size:27px}
+.subtitle{color:#b8c4d7;font-size:13px;margin-top:9px}
+.container{max-width:1100px;margin:auto;padding:12px}
 .panel{
-background:rgba(17,27,45,.96);border:1px solid var(--line);
-border-radius:16px;padding:17px;margin:14px 0;
-box-shadow:0 12px 35px #0003
+background:#121d31;border:1px solid #2a3b56;
+border-radius:14px;padding:16px;margin:12px 0
 }
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.row>*{flex:1}
-.field label{display:block;color:var(--muted);
-font-size:12px;margin-bottom:6px}
-input{
-width:100%;background:#091221;border:1px solid var(--line);
-border-radius:10px;color:white;padding:13px;font-size:16px
+h2{font-size:18px;color:#f2c65a;margin:0 0 14px}
+label{font-size:13px;color:#c0cde0;display:block;margin-bottom:7px}
+input,select{
+width:100%;background:#091222;color:white;
+border:1px solid #344967;border-radius:9px;
+padding:13px;font-size:16px;margin-bottom:12px
 }
 button{
-background:var(--gold);color:#151515;border:0;
-border-radius:10px;padding:13px 18px;font-weight:800;
-font-size:15px;cursor:pointer
+border:0;border-radius:9px;padding:13px 18px;
+font-weight:bold;cursor:pointer
 }
-button.secondary{background:#20324d;color:#fff;
-border:1px solid #395171}
-button:disabled{opacity:.5;cursor:wait}
-.status{color:var(--muted);font-size:13px;
-line-height:1.5;overflow-wrap:anywhere}
-.cards{display:grid;grid-template-columns:
-repeat(auto-fit,minmax(190px,1fr));gap:10px}
-.card{background:#0b1525;border:1px solid var(--line);
-border-radius:13px;padding:15px}
-.card .num{font-size:30px;font-weight:800;margin:5px 0}
-.gold{color:var(--gold)}.blue{color:var(--blue)}
-.green{color:var(--green)}
-.small{font-size:12px;color:var(--muted)}
-.tablewrap{overflow:auto}
-table{border-collapse:collapse;width:100%;min-width:500px}
-th,td{text-align:left;padding:10px;
-border-bottom:1px solid var(--line);font-size:13px}
-th{color:var(--muted)}
-.pill{display:inline-block;padding:4px 8px;
-border-radius:20px;background:#1b2d46;
-color:#cfe1f8;font-size:11px}
-details{border:1px solid var(--line);
-border-radius:10px;padding:10px;margin:8px 0}
-summary{cursor:pointer;font-weight:700}
-a{color:#83bdff}
-.warn{border-left:3px solid var(--gold);padding:10px 12px;
-background:#211d13;color:#e9d7a6;border-radius:7px;
-font-size:13px;line-height:1.5}
-@media(max-width:600px){
-.wrap{padding:16px 10px 35px}
-.panel{padding:13px}
-.row button{width:100%}
+.primary{background:#e5b84c;color:#121212;width:100%}
+.secondary{background:#263e62;color:white}
+button:disabled{opacity:.5}
+.grid{
+display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+gap:10px
+}
+.card{
+background:#0b1526;border:1px solid #293a55;
+border-radius:12px;text-align:center;padding:15px 8px
+}
+.value{font-size:27px;font-weight:bold;color:#eec35c;margin:8px 0}
+.caption{font-size:12px;color:#a7b7cd}
+.status{font-size:13px;color:#c6d5e8;line-height:1.6;overflow-wrap:anywhere}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:440px}
+th,td{
+padding:11px 8px;text-align:left;
+border-bottom:1px solid #2b3b52;font-size:13px
+}
+th{color:#f0c65c}
+.idbox{
+display:inline-block;background:#263d60;
+border:1px solid #41638e;border-radius:8px;
+padding:7px 10px;margin:4px;font-weight:bold;
+font-size:13px
+}
+.spots{
+display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+gap:9px
+}
+.spot{
+background:#0b172b;border:1px solid #304565;
+padding:12px 8px;border-radius:10px;
+min-height:85px;overflow-wrap:anywhere
+}
+.spot strong{color:#f2c65a;font-size:13px}
+.spot .user{font-size:19px;font-weight:bold;margin:7px 0}
+.spot small{color:#a9bcd5;font-size:10px}
+.note{
+background:#292313;border-left:3px solid #e5b84c;
+padding:12px;border-radius:8px;color:#e7d7a6;
+font-size:12px;line-height:1.6
+}
+a{color:#8fc2ff}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+details{border:1px solid #34445d;border-radius:9px;padding:12px;margin-top:10px}
+summary{cursor:pointer;color:#f2c65a;font-weight:bold}
+#tree{max-height:500px;overflow:auto}
+.treeitem{padding:7px 9px;border-left:2px solid #416fa5;margin:4px 0;font-size:13px}
+footer{text-align:center;padding:25px;color:#9daec5;font-size:12px}
+@media(min-width:750px){
+.grid{grid-template-columns:repeat(4,1fr)}
+.spots{grid-template-columns:repeat(4,1fr)}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<div class="top">
-<h1>B-TITAN LIVE EXPLORER</h1>
-<span class="pill">BNB MAINNET · READ ONLY</span>
+<header>
+<h1>₿ B-TITAN LIVE EXPLORER</h1>
+<div class="subtitle">
+LIVE TEAM COUNTER • REFERRAL TREE • MATRIX TREE
 </div>
+<div class="subtitle">BNB SMART CHAIN MAINNET</div>
+</header>
 
-<p class="sub">
-Search any User ID to inspect its Referral Team
-and current Matrix placements.
-</p>
+<div class="container">
 
 <section class="panel">
-<div class="row">
-<div class="field">
-<label>USER ID</label>
-<input id="uid" type="number" min="1"
-step="1" value="1" placeholder="Enter User ID">
-</div>
-<div class="field">
-<label>MAX USERS TO SCAN</label>
-<input id="cap" type="number" min="50"
-max="5000" step="50" value="500">
-</div>
-</div>
+<h2>SEARCH ANY USER ID</h2>
 
-<div class="row" style="margin-top:12px">
-<button id="searchBtn">SEARCH TEAM</button>
-<button class="secondary" id="refreshBtn">
-REFRESH DATA
+<label>Enter B-TITAN User ID</label>
+<input type="number" id="userId" min="1" value="1">
+
+<label>Maximum users to scan</label>
+<input type="number" id="scanLimit" min="50" max="3000" value="500">
+
+<button class="primary" id="searchBtn" onclick="searchTeam()">
+🔍 SEARCH LIVE TEAM
 </button>
-</div>
 
-<p class="status" id="status">
-Connecting to BNB Smart Chain...
-</p>
-
-<p class="small">
-Contract:
-<a target="_blank" rel="noopener"
-href="https://bscscan.com/address/0xD6759d47Fccdef7b8E318479cEC4D128366f2a44">
-0xD6759d47Fccdef7b8E318479cEC4D128366f2a44
-</a>
-</p>
+<p id="status" class="status">Connecting to BNB Mainnet...</p>
 </section>
 
 <section class="panel">
-<h2 id="profileTitle">User Overview</h2>
-
-<div class="cards">
-<div class="card">
-<div class="small">Referral Team</div>
-<div class="num blue" id="refTotal">—</div>
-<div class="small">Registration-based descendants</div>
-</div>
-
-<div class="card">
-<div class="small">Direct Referrals</div>
-<div class="num" id="directTotal">—</div>
-</div>
-
-<div class="card">
-<div class="small">Matrix Team</div>
-<div class="num green" id="matrixTotal">—</div>
-<div class="small">Current-cycle descendants</div>
-</div>
-
-<div class="card">
-<div class="small">Active Levels</div>
-<div class="num gold" id="activeLevels">—</div>
-</div>
-</div>
-
-<div class="small" id="profileMeta"
-style="margin-top:13px"></div>
+<h2>USER PROFILE</h2>
+<div id="profile" class="status">Search an ID to view details.</div>
 </section>
 
 <section class="panel">
-<h2>Referral Team — Level Wise</h2>
-<div class="tablewrap">
+<h2>LIVE TEAM COUNTER</h2>
+<div class="grid">
+<div class="card">
+<div class="caption">TOTAL REFERRAL TEAM</div>
+<div class="value" id="refCount">—</div>
+</div>
+<div class="card">
+<div class="caption">DIRECT PARTNERS</div>
+<div class="value" id="directCount">—</div>
+</div>
+<div class="card">
+<div class="caption">CURRENT MATRIX TEAM</div>
+<div class="value" id="matrixCount">—</div>
+</div>
+<div class="card">
+<div class="caption">ACTIVE LEVELS</div>
+<div class="value" id="activeCount">—</div>
+</div>
+</div>
+</section>
+
+<section class="panel">
+<h2>DIRECT DOWNLINE IDs</h2>
+<div id="directIds" class="status">No data yet.</div>
+</section>
+
+<section class="panel">
+<h2>REFERRAL TEAM LEVEL-WISE</h2>
+<div class="scroll">
 <table>
 <thead>
-<tr><th>Referral Depth</th><th>Unique Users</th></tr>
+<tr><th>Depth</th><th>Total IDs</th><th>View IDs</th></tr>
 </thead>
-<tbody id="refRows">
-<tr><td colspan="2">Search a User ID.</td></tr>
-</tbody>
+<tbody id="refTable"></tbody>
 </table>
 </div>
-
-<details>
-<summary>Direct Referral IDs</summary>
-<div id="directIds" class="status">—</div>
-</details>
+<div id="refLevelIds" class="status"></div>
 </section>
 
 <section class="panel">
-<h2>Matrix Team — Level Wise</h2>
+<h2>REFERRAL DOWNLINE TREE</h2>
+<div id="tree" class="status">Search a User ID.</div>
+</section>
 
-<div class="warn">
-Matrix count reads the currently stored matrix arrays.
-When a matrix recycles, the contract clears that array.
-Old cycle history requires a separate event indexer.
+<section class="panel">
+<h2>14 SPOT MATRIX VIEW</h2>
+
+<label>Select Matrix Level</label>
+<select id="matrixLevel" onchange="showSelectedMatrix()">
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+<option value="3">Level 3</option>
+<option value="4">Level 4</option>
+<option value="5">Level 5</option>
+<option value="6">Level 6</option>
+<option value="7">Level 7</option>
+<option value="8">Level 8</option>
+<option value="9">Level 9</option>
+<option value="10">Level 10</option>
+<option value="11">Level 11</option>
+<option value="12">Level 12</option>
+</select>
+
+<div id="matrixInfo" class="status"></div>
+<div class="spots" id="spotGrid"></div>
+</section>
+
+<section class="panel">
+<h2>MATRIX TEAM LEVEL-WISE</h2>
+<div class="note">
+This section counts unique IDs reachable through current
+matrix referral arrays. Old cycles are not included.
+Repeated placements of the same ID are counted once.
 </div>
-
-<div class="tablewrap" style="margin-top:12px">
+<div class="scroll">
 <table>
 <thead>
 <tr>
-<th>Matrix Level</th>
-<th>Unique Descendants</th>
+<th>Level</th>
+<th>Unique IDs</th>
 <th>Root Spots</th>
-<th>Reinvest Count</th>
+<th>Recycle</th>
+<th>IDs</th>
 </tr>
 </thead>
-<tbody id="matrixRows">
-<tr><td colspan="4">Search a User ID.</td></tr>
-</tbody>
+<tbody id="matrixTable"></tbody>
 </table>
 </div>
-
-<details>
-<summary>Matrix Team IDs</summary>
-<div id="matrixIds" class="status">—</div>
-</details>
+<div id="matrixLevelIds" class="status"></div>
 </section>
 
-<p class="small">
-Read-only dashboard. No wallet connection, seed phrase,
-private key or token approval is required.
-Auto-refresh runs every 30 seconds.
-</p>
+<section class="panel">
+<h2>BLOCKCHAIN INFORMATION</h2>
+<div class="status">
+Network: BNB Smart Chain Mainnet<br>
+Chain ID: 56<br>
+Contract:
+<a target="_blank" rel="noopener"
+href="https://bscscan.com/address/0xD6759d47Fccdef7b8E318479cEC4D128366f2a44">
+View on BscScan
+</a>
+<br>
+Last Updated: <span id="updated">—</span>
+</div>
+</section>
+
+<section class="panel">
+<h2>IMPORTANT INFORMATION</h2>
+<div class="note">
+This dashboard uses public read-only contract functions.
+It does not require a wallet connection or token approval.
+Referral totals are based on registration relationships.
+Matrix totals are based on currently stored placements.
+Old recycled matrices require historical blockchain event indexing.
+Large team searches may be limited by RPC rate limits.
+</div>
+</section>
 
 </div>
 
-<script>
-(() => {
+<footer>
+B-TITAN LIVE TEAM EXPLORER<br>
+Powered by BNB Smart Chain
+</footer>
 
-const CONTRACT_ADDRESS =
+<script>
+const CONTRACT =
 "0xD6759d47Fccdef7b8E318479cEC4D128366f2a44";
 
-const RPC_URL =
+const RPC =
 "https://bsc-dataseed.bnbchain.org";
 
-const ABI = [
+const ABI=[
 "function lastUserId() view returns(uint256)",
 "function idToAddress(uint256) view returns(address)",
 "function addressToId(address) view returns(uint256)",
-"function getUserDetails(uint256) view returns(address userAddress,address referrerAddress,uint256 referrerId,uint256 partnersCount,uint8 activeSlotsCount,uint256 teamSize,uint256 registrationTimestamp,uint256 totalIncome)",
+"function getUserDetails(uint256) view returns(address,address,uint256,uint256,uint8,uint256,uint256,uint256)",
 "function getDirectPartnerIds(uint256) view returns(uint256[])",
-"function usersXMatrix(address,uint8) view returns(address currentReferrer,uint256 reinvestCount,uint256 heldTokenForUpgrade,uint256 lastSpillUnderReceiverIndex,uint256 totalTeamSize,uint256 totalEarning)",
+"function usersXMatrix(address,uint8) view returns(address,uint256,uint256,uint256,uint256,uint256)",
 "function usersXMatrixReferrals(address,uint8) view returns(address[])"
 ];
 
-const $ = id => document.getElementById(id);
-
-const provider = new ethers.JsonRpcProvider(
-RPC_URL, 56, {staticNetwork:true}
+const provider=new ethers.JsonRpcProvider(
+RPC,56,{staticNetwork:true}
 );
+const contract=new ethers.Contract(CONTRACT,ABI,provider);
 
-const contract = new ethers.Contract(
-CONTRACT_ADDRESS, ABI, provider
-);
+const el=id=>document.getElementById(id);
+const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",
+'"':"&quot;","'":"&#39;"
+}[c]));
 
-let timer = null;
+let currentId=null;
+let currentAddress=null;
+let matrixCache={};
+let refreshTimer=null;
+let busy=false;
 
-function status(msg){
-$("status").textContent = msg;
+function setStatus(text){
+el("status").textContent=text;
 }
 
-function short(address){
-return address && address.length > 16
-? address.slice(0,8)+"..."+address.slice(-6)
-: address;
+function shortAddress(address){
+return address.slice(0,8)+"..."+address.slice(-6);
 }
 
-function chunks(arr,size){
+function idBadge(id){
+return '<span class="idbox">ID '+escapeHtml(id)+'</span>';
+}
+
+function validId(value){
+return /^[1-9][0-9]*$/.test(String(value));
+}
+
+function getCap(){
+return Math.max(50,Math.min(3000,
+Number(el("scanLimit").value)||500));
+}
+
+async function batch(items,callback){
 const result=[];
-for(let i=0;i<arr.length;i+=size){
-result.push(arr.slice(i,i+size));
+for(let i=0;i<items.length;i+=8){
+const part=items.slice(i,i+8);
+result.push(...await Promise.all(part.map(callback)));
 }
 return result;
 }
 
-async function parallelMap(arr,fn){
-let result=[];
-for(const group of chunks(arr,12)){
-result.push(...await Promise.all(group.map(fn)));
-}
-return result;
-}
+// GET DIRECT REFERRALS
 
-function setRows(id,rows,cols){
-$(id).innerHTML = rows.length
-? rows.map(row =>
-"<tr>"+row.map(v=>"<td>"+v+"</td>").join("")+"</tr>"
-).join("")
-: `<tr><td colspan="${cols}">No records found.</td></tr>`;
+async function getDirectIds(id){
+const result=await contract.getDirectPartnerIds(id);
+return result.map(x=>x.toString());
 }
 
-// REFERRAL TREE SCANNER
+// REFERRAL TREE WITH IDS
 
-async function scanReferral(rootId,cap){
-
-let frontier=[rootId];
-let seen=new Set([rootId.toString()]);
+async function loadReferralTree(rootId,cap){
+const seen=new Set([String(rootId)]);
+const rows=[];
+const nodes=[];
+let frontier=[String(rootId)];
 let depth=0;
-let rows=[];
-let direct=[];
+let truncated=false;
 
-while(frontier.length && seen.size-1<cap){
-
+while(frontier.length){
 depth++;
+const next=[];
+const levelIds=[];
 
-const lists=await parallelMap(
-frontier,
-id=>contract.getDirectPartnerIds(id)
+for(let i=0;i<frontier.length;i+=8){
+const parents=frontier.slice(i,i+8);
+const lists=await Promise.all(
+parents.map(id=>getDirectIds(id))
 );
 
-const next=[];
-
-for(let i=0;i<lists.length;i++){
-
-const ids=lists[i].map(x=>x.toString());
-
-if(depth===1) direct=ids;
-
-for(const id of ids){
-if(!seen.has(id)){
-seen.add(id);
-next.push(id);
+for(let j=0;j<parents.length;j++){
+for(const child of lists[j]){
+if(seen.has(child))continue;
+if(seen.size-1>=cap){
+truncated=true;
+break;
+}
+seen.add(child);
+next.push(child);
+levelIds.push(child);
+nodes.push({
+id:child,
+parent:parents[j],
+depth
+});
 }
 }
+if(truncated)break;
 }
 
-rows.push([`Level ${depth}`,String(next.length)]);
-
+rows.push({depth,ids:levelIds});
 frontier=next;
 
-if(depth>100){
-throw new Error("Referral depth safety limit reached.");
+if(truncated)break;
+if(depth>=100 && frontier.length){
+truncated=true;
+break;
 }
 }
 
 return {
 count:seen.size-1,
-rows,
-direct,
-ids:[...seen].slice(1),
-capped:frontier.length>0 || seen.size-1>=cap
+rows,nodes,truncated
 };
 }
 
-// MATRIX TREE SCANNER
+function renderReferral(data){
+el("refCount").textContent=
+data.count.toLocaleString()+(data.truncated?"+":"");
 
-async function scanMatrix(rootAddress,cap){
+el("refTable").innerHTML=data.rows.map(row=>`
+<tr>
+<td>Level ${row.depth}</td>
+<td>${row.ids.length}</td>
+<td><button class="secondary"
+onclick="showReferralLevel(${row.depth})">
+View IDs</button></td>
+</tr>`).join("");
 
-let union=new Set();
-let rows=[];
+window.referralRows=data.rows;
 
-for(let level=1;level<=12;level++){
+el("tree").innerHTML=data.nodes.length
+?data.nodes.map(n=>`
+<div class="treeitem" style="margin-left:${Math.min(n.depth-1,8)*12}px">
+<b>ID ${escapeHtml(n.id)}</b>
+<span class="caption">
+← Parent ID ${escapeHtml(n.parent)}
+| Depth ${n.depth}
+</span>
+</div>`).join("")
+:"No referral downline found.";
 
-const rootRefs =
-await contract.usersXMatrixReferrals(rootAddress,level);
+if(data.truncated){
+el("tree").insertAdjacentHTML("beforeend",
+'<p class="note">Scan limit reached. Counts are partial.</p>');
+}
+}
 
-const rootState =
-await contract.usersXMatrix(rootAddress,level);
+function showReferralLevel(depth){
+const row=(window.referralRows||[])
+.find(r=>r.depth===depth);
+el("refLevelIds").innerHTML=row
+?`<h3>Referral Level ${depth}</h3>`+
+(row.ids.map(idBadge).join("")||"No IDs")
+:"No data";
+}
 
-let frontier=[
-...new Set(rootRefs.map(a=>a.toLowerCase()))
-];
+// MATRIX CURRENT CYCLE
 
-let seen=new Set(frontier);
-let depth=1;
-
-while(frontier.length && union.size<cap){
-
-const lists=await parallelMap(
-frontier,
-address=>contract.usersXMatrixReferrals(address,level)
+async function scanMatrixLevel(rootAddress,level,cap){
+const rootKey=rootAddress.toLowerCase();
+const rootRefs=await contract.usersXMatrixReferrals(
+rootAddress,level
 );
+const state=await contract.usersXMatrix(rootAddress,level);
 
+const seen=new Set([rootKey]);
+let frontier=[rootAddress];
+let truncated=false;
+let depth=0;
+
+while(frontier.length){
 const next=[];
 
+for(let i=0;i<frontier.length;i+=8){
+const group=frontier.slice(i,i+8);
+const lists=await Promise.all(group.map(address=>
+contract.usersXMatrixReferrals(address,level)
+));
+
 for(const list of lists){
-
 for(const address of list){
-
 const key=address.toLowerCase();
-
-if(
-key!==ethers.ZeroAddress.toLowerCase()
-&&!seen.has(key)
-){
+if(key===ethers.ZeroAddress.toLowerCase())continue;
+if(seen.has(key))continue;
+if(seen.size-1>=cap){
+truncated=true;
+break;
+}
 seen.add(key);
-next.push(key);
+next.push(address);
 }
 }
+if(truncated)break;
 }
 
 frontier=next;
 depth++;
-
-if(depth>100) break;
+if(truncated)break;
+if(depth>=100 && frontier.length){
+truncated=true;
+break;
+}
 }
 
-const ids=await parallelMap(
-[...seen],
-address=>contract.addressToId(address)
-);
+seen.delete(rootKey);
+const addresses=[...seen];
 
-const levelIds=ids
-.map(x=>x.toString())
-.filter(x=>x!=="0");
-
-levelIds.forEach(id=>union.add(id));
-
-rows.push([
-`Level ${level}`,
-String(levelIds.length),
-String(rootRefs.length),
-rootState.reinvestCount.toString()
-]);
-
-if(union.size>=cap) break;
-}
+const ids=await batch(addresses,async address=>{
+const id=await contract.addressToId(address);
+return id.toString();
+});
 
 return {
-count:union.size,
-rows,
-ids:[...union],
-capped:union.size>=cap
+level,
+ids:ids.filter(x=>x!=="0"),
+spots:rootRefs.length,
+recycle:state.reinvestCount.toString(),
+truncated
 };
 }
 
-// MAIN SEARCH FUNCTION
+async function loadAllMatrices(address,cap){
+const data=[];
+const unique=new Set();
 
-async function run(){
+for(let level=1;level<=12;level++){
+setStatus("Scanning Matrix Level "+level+" of 12...");
+const row=await scanMatrixLevel(address,level,cap);
+data.push(row);
+row.ids.forEach(id=>unique.add(id));
+}
 
-$("searchBtn").disabled=true;
-$("refreshBtn").disabled=true;
+return {
+rows:data,
+count:unique.size,
+truncated:data.some(r=>r.truncated)
+};
+}
+
+function renderMatrix(data){
+el("matrixCount").textContent=
+data.count.toLocaleString()+
+(data.truncated?"+":"");
+
+window.matrixRows=data.rows;
+
+el("matrixTable").innerHTML=data.rows.map(row=>`
+<tr>
+<td>Level ${row.level}</td>
+<td>${row.ids.length}${row.truncated?"+":""}</td>
+<td>${row.spots}/14</td>
+<td>${row.recycle}</td>
+<td><button class="secondary"
+onclick="showMatrixIds(${row.level})">
+View IDs</button></td>
+</tr>`).join("");
+}
+
+function showMatrixIds(level){
+const row=(window.matrixRows||[])
+.find(r=>r.level===level);
+el("matrixLevelIds").innerHTML=row
+?`<h3>Matrix Level ${level} IDs</h3>`+
+(row.ids.map(idBadge).join("")||"No IDs")+
+(row.truncated?'<p class="note">Partial result</p>':"")
+:"No data";
+}
+
+// SHOW ALL 14 SPOTS WITH USER ID
+
+async function showSelectedMatrix(){
+if(!currentAddress)return;
+
+const level=Number(el("matrixLevel").value);
+el("matrixInfo").textContent="Loading Level "+level+"...";
+el("spotGrid").innerHTML="";
 
 try{
-
-const idText=$("uid").value.trim();
-
-const cap=Math.max(
-50,
-Math.min(5000,Number($("cap").value)||500)
-);
-
-if(!/^[1-9][0-9]*$/.test(idText)){
-throw new Error("Enter a valid positive User ID.");
-}
-
-status("Connecting to BNB Mainnet...");
-
-const [chain,latestId]=await Promise.all([
-provider.getNetwork(),
-contract.lastUserId()
+const [addresses,state]=await Promise.all([
+contract.usersXMatrixReferrals(currentAddress,level),
+contract.usersXMatrix(currentAddress,level)
 ]);
 
-if(chain.chainId!==56n){
-throw new Error("BNB Mainnet connection failed.");
+const ids=await batch(addresses,async address=>{
+return (await contract.addressToId(address)).toString();
+});
+
+el("matrixInfo").textContent=
+"Level: "+level+
+" | Filled Spots: "+addresses.length+"/14"+
+" | Recycle Count: "+state.reinvestCount.toString()+
+" | Total Placements Recorded: "+state.totalTeamSize.toString();
+
+let html="";
+
+for(let i=0;i<14;i++){
+const filled=i<addresses.length;
+const id=filled?ids[i]:"";
+const wallet=filled?addresses[i]:"";
+
+html+=`
+<div class="spot">
+<strong>SPOT ${i+1}</strong>
+<div class="user">
+${filled?"ID "+escapeHtml(id):"EMPTY"}
+</div>
+<small>${filled?escapeHtml(shortAddress(wallet)):"Available"}</small>
+${filled?`<div><a target="_blank" rel="noopener"
+href="https://bscscan.com/address/${wallet}">
+View Wallet</a></div>`:""}
+</div>`;
 }
 
-if(BigInt(idText)>latestId){
-throw new Error(
-"ID does not exist. Latest User ID: "+
-latestId.toString()
-);
+el("spotGrid").innerHTML=html;
+}catch(error){
+el("matrixInfo").textContent=
+"Matrix error: "+(error.shortMessage||error.message);
+}
 }
 
-const d=await contract.getUserDetails(idText);
+// MAIN SEARCH
 
-if(d.userAddress===ethers.ZeroAddress){
+async function searchTeam(){
+if(busy)return;
+
+const id=el("userId").value.trim();
+if(!validId(id)){
+setStatus("Please enter a valid User ID.");
+return;
+}
+
+busy=true;
+el("searchBtn").disabled=true;
+
+try{
+setStatus("Connecting to BNB Mainnet...");
+
+const network=await provider.getNetwork();
+if(network.chainId!==56n){
+throw new Error("Wrong network.");
+}
+
+const address=await contract.idToAddress(id);
+if(address===ethers.ZeroAddress){
 throw new Error("User ID not found.");
 }
 
-$("profileTitle").textContent =
-"User ID "+idText+" · "+short(d.userAddress);
+const details=await contract.getUserDetails(id);
 
-$("profileMeta").textContent =
-"Wallet: "+d.userAddress+
-" | Initial Referrer ID: "+d.referrerId.toString()+
-" | Direct Referrals: "+d.partnersCount.toString()+
-" | Contract teamSize: "+d.teamSize.toString()+
-" | Total Income (raw token units): "+d.totalIncome.toString()+
-" | Registered: "+
-new Date(Number(d.registrationTimestamp)*1000).toLocaleString();
+currentId=id;
+currentAddress=address;
 
-$("activeLevels").textContent =
-d.activeSlotsCount.toString();
+el("profile").innerHTML=`
+<b>User ID:</b> ${escapeHtml(id)}<br>
+<b>Wallet:</b> ${escapeHtml(address)}<br>
+<b>Referrer ID:</b> ${details[2]}<br>
+<b>Direct Partners:</b> ${details[3]}<br>
+<b>Active Levels:</b> ${details[4]}<br>
+<b>Contract Matrix Placement Count:</b> ${details[5]}<br>
+<b>Total Income (raw token units):</b> ${details[7]}<br>
+<b>Registration:</b>
+${new Date(Number(details[6])*1000).toLocaleString()}
+`;
 
-$("directTotal").textContent =
-d.partnersCount.toString();
+el("activeCount").textContent=details[4].toString();
+el("directCount").textContent=details[3].toString();
 
-status("Scanning Referral Team...");
+const directs=await getDirectIds(id);
+el("directIds").innerHTML=directs.length
+?directs.map(idBadge).join("")
+:"No direct partners.";
 
-const referral=await scanReferral(idText,cap);
+const cap=getCap();
 
-$("refTotal").textContent =
-referral.count.toLocaleString();
+setStatus("Scanning Referral Team...");
+const referral=await loadReferralTree(id,cap);
+renderReferral(referral);
 
-setRows("refRows",referral.rows,2);
+setStatus("Scanning Matrix Team...");
+const matrix=await loadAllMatrices(address,cap);
+renderMatrix(matrix);
 
-$("directIds").textContent =
-referral.direct.length
-? referral.direct.join(", ")
-: "No direct referrals.";
+await showSelectedMatrix();
 
-status("Scanning Matrix Team across 12 levels...");
+el("updated").textContent=new Date().toLocaleString();
 
-const matrix=await scanMatrix(d.userAddress,cap);
-
-$("matrixTotal").textContent =
-matrix.count.toLocaleString();
-
-setRows("matrixRows",matrix.rows,4);
-
-$("matrixIds").textContent =
-matrix.ids.length
-? matrix.ids.join(", ")
-: "No current matrix descendants.";
-
-let notes=[];
-
-if(referral.capped){
-notes.push("Referral scan reached safety limit.");
-}
-
-if(matrix.capped){
-notes.push("Matrix scan reached safety limit.");
-}
-
-status(
-"Updated: "+new Date().toLocaleTimeString()+
-" | Latest User ID: "+latestId.toString()+
-(notes.length?" | "+notes.join(" "):"")
+setStatus(
+"Search completed for ID "+id+
+". Data refreshed from BNB Mainnet."+
+(referral.truncated||matrix.truncated
+?" Some counts are partial due to scan limits.":"")
 );
 
 }catch(error){
-
 console.error(error);
-
-status(
-"Error: "+
-(error.shortMessage||error.message||String(error))
-);
-
+setStatus("Error: "+(error.shortMessage||error.message));
 }finally{
-
-$("searchBtn").disabled=false;
-$("refreshBtn").disabled=false;
-
+busy=false;
+el("searchBtn").disabled=false;
+}
 }
 
+// AUTO REFRESH EVERY 30 SECONDS
+
+refreshTimer=setInterval(()=>{
+if(currentId&&!busy){
+searchTeam();
 }
+},30000);
 
-// BUTTONS
+// ENTER KEY SEARCH
 
-$("searchBtn").addEventListener("click",()=>{
-
-if(timer) clearInterval(timer);
-
-run();
-
-timer=setInterval(run,30000);
-
+el("userId").addEventListener("keydown",event=>{
+if(event.key==="Enter")searchTeam();
 });
 
-$("refreshBtn").addEventListener("click",run);
+// CONNECTION STATUS
 
-$("uid").addEventListener("keydown",event=>{
-
-if(event.key==="Enter"){
-$("searchBtn").click();
-}
-
-});
-
-// INITIAL CONNECTION CHECK
-
-provider.getNetwork()
-.then(network=>{
-
-status(
-"Connected to BNB Mainnet. Chain ID: "+
-network.chainId+
-". Enter a User ID and Search."
+provider.getNetwork().then(network=>{
+setStatus(
+"BNB Mainnet connected. Chain ID: "+
+network.chainId+". Search any User ID."
 );
-
-})
-.catch(error=>{
-
-status("RPC connection issue: "+error.message);
-
+}).catch(error=>{
+setStatus("RPC connection issue: "+error.message);
 });
 
-})();
 </script>
-
 </body>
 </html>
