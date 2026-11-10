@@ -5,12 +5,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>B-TITAN Live Team Explorer</title>
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
+body{margin:0;background:#080d18;color:white;font-family:Arial,sans-serif}
 header{text-align:center;padding:24px 12px;background:#111b2d;border-bottom:2px solid #e7bd55}
-h1{margin:0;color:#e7bd55;font-size:25px}
+h1{margin:0;color:#e7bd55;font-size:24px}
 .sub{color:#a9b8cd;font-size:12px;margin-top:8px}
 main{max-width:1100px;margin:auto;padding:12px}
 .panel{background:#111b2d;border:1px solid #2a3b56;border-radius:14px;padding:16px;margin:12px 0}
@@ -86,7 +85,7 @@ footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
 </div>
 </div>
 <button class="primary" id="searchBtn">SEARCH USER ID</button>
-<p id="status" class="status">Connecting to BNB Mainnet...</p>
+<p id="status" class="status">Loading blockchain connection system...</p>
 </section>
 
 <section class="panel">
@@ -108,44 +107,20 @@ footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
 <h2>USER PROFILE</h2>
 <div id="profile" class="status">Search a User ID.</div>
 <div class="cards" style="margin-top:12px">
-<div class="card">
-<div class="label">USER TOTAL INCOME</div>
-<div class="value green" id="userIncome">—</div>
-</div>
-<div class="card">
-<div class="label">MATRIX TOTAL EARNING</div>
-<div class="value gold" id="matrixEarning">—</div>
-</div>
-<div class="card">
-<div class="label">DIRECT REFERRALS</div>
-<div class="value blue" id="directCount">—</div>
-</div>
-<div class="card">
-<div class="label">ACTIVE LEVELS</div>
-<div class="value" id="activeCount">—</div>
-</div>
+<div class="card"><div class="label">USER TOTAL INCOME</div><div class="value green" id="userIncome">—</div></div>
+<div class="card"><div class="label">MATRIX TOTAL EARNING</div><div class="value gold" id="matrixEarning">—</div></div>
+<div class="card"><div class="label">DIRECT REFERRALS</div><div class="value blue" id="directCount">—</div></div>
+<div class="card"><div class="label">ACTIVE LEVELS</div><div class="value" id="activeCount">—</div></div>
 </div>
 </section>
 
 <section class="panel">
 <h2>TEAM COUNTERS</h2>
 <div class="cards">
-<div class="card">
-<div class="label">TOTAL REFERRAL TEAM</div>
-<div class="value blue" id="refCount">—</div>
-</div>
-<div class="card">
-<div class="label">TOTAL MATRIX TEAM</div>
-<div class="value green" id="matrixCount">—</div>
-</div>
-<div class="card">
-<div class="label">CONTRACT TEAM SIZE</div>
-<div class="value" id="contractTeam">—</div>
-</div>
-<div class="card">
-<div class="label">CURRENT CYCLE</div>
-<div class="value" id="cycleCount">—</div>
-</div>
+<div class="card"><div class="label">TOTAL REFERRAL TEAM</div><div class="value blue" id="refCount">—</div></div>
+<div class="card"><div class="label">TOTAL MATRIX TEAM</div><div class="value green" id="matrixCount">—</div></div>
+<div class="card"><div class="label">CONTRACT TEAM SIZE</div><div class="value" id="contractTeam">—</div></div>
+<div class="card"><div class="label">CURRENT CYCLE</div><div class="value" id="cycleCount">—</div></div>
 </div>
 </section>
 
@@ -158,9 +133,7 @@ footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
 <h2>REFERRAL TEAM LEVEL-WISE</h2>
 <div class="scroll">
 <table>
-<thead>
-<tr><th>Depth</th><th>Total IDs</th><th>IDs</th></tr>
-</thead>
+<thead><tr><th>Depth</th><th>Total IDs</th><th>IDs</th></tr></thead>
 <tbody id="refTable">
 <tr><td colspan="3">Search a User ID first.</td></tr>
 </tbody>
@@ -182,22 +155,13 @@ footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
 <h2>MATRIX TEAM LEVEL-WISE</h2>
 <div class="scroll">
 <table>
-<thead>
-<tr>
-<th>Level</th>
-<th>Unique IDs</th>
-<th>Root Spots</th>
-<th>Reinvest</th>
-</tr>
-</thead>
+<thead><tr><th>Level</th><th>Unique IDs</th><th>Root Spots</th><th>Reinvest</th></tr></thead>
 <tbody id="matrixTable">
 <tr><td colspan="4">Search a User ID first.</td></tr>
 </tbody>
 </table>
 </div>
-<button class="secondary" id="matrixBtn" disabled>
-LOAD MATRIX TEAM IDs (LEVEL 1–12)
-</button>
+<button class="secondary" id="matrixBtn" disabled>LOAD MATRIX TEAM IDs (LEVEL 1–12)</button>
 <div id="matrixContent" class="result hidden">
 <div id="matrixIds"></div>
 </div>
@@ -208,20 +172,18 @@ LOAD MATRIX TEAM IDs (LEVEL 1–12)
 <div class="status">
 BNB Smart Chain Mainnet • Chain ID 56<br>
 Contract:
-<a target="_blank" href="https://bscscan.com/address/0xD6759d47Fccdef7b8E318479cEC4D128366f2a44">
-View on BscScan
-</a><br>
+<a target="_blank" href="https://bscscan.com/address/0xD6759d47Fccdef7b8E318479cEC4D128366f2a44">View on BscScan</a><br>
+RPC Server: <span id="rpcName">Checking...</span><br>
 Last Updated: <span id="updated">—</span>
 </div>
 </section>
 
 <div class="warn">
 Read-only dashboard. No wallet connection or private key required.
-Referral Team is calculated from direct referral IDs.
-Matrix Team uses currently stored matrix referrals only.
-Historical recycle data requires event indexing.
+Matrix data shows currently stored referrals only.
+Historical recycle data requires blockchain event indexing.
 Global Total Payout is not stored by this contract.
-Large scans may take time or encounter RPC limits.
+Large team scans can take time and public RPC services may limit requests.
 </div>
 
 </main>
@@ -229,11 +191,16 @@ Large scans may take time or encounter RPC limits.
 <footer>B-TITAN LIVE TEAM EXPLORER</footer>
 
 <script>
-(()=>{
 "use strict";
 
-const ADDRESS="0xD6759d47Fccdef7b8E318479cEC4D128366f2a44";
-const RPC="https://bsc-dataseed.bnbchain.org";
+const CONTRACT_ADDRESS="0xD6759d47Fccdef7b8E318479cEC4D128366f2a44";
+
+const RPC_LIST=[
+{name:"BNB Dataseed",url:"https://bsc-dataseed.bnbchain.org"},
+{name:"Binance Dataseed 1",url:"https://bsc-dataseed1.binance.org"},
+{name:"Binance Dataseed 2",url:"https://bsc-dataseed2.binance.org"},
+{name:"BNB Dataseed 1",url:"https://bsc-dataseed1.bnbchain.org"}
+];
 
 const ABI=[
 "function lastUserId() view returns(uint256)",
@@ -248,23 +215,188 @@ const ABI=[
 ];
 
 const $=id=>document.getElementById(id);
+const ZERO="0x0000000000000000000000000000000000000000";
 
-const provider=new ethers.JsonRpcProvider(
-RPC,56,{staticNetwork:true}
-);
-
-const contract=new ethers.Contract(ADDRESS,ABI,provider);
-
+let ethersLib=null;
+let connections=[];
+let activeConnection=0;
 let decimals=18;
-let symbol="BTC";
+let symbol="BTCB";
 let currentAddress=null;
 let currentId=null;
 let busy=false;
 let referralLoaded=false;
 let matrixLoaded=false;
 
-const ZERO=ethers.ZeroAddress.toLowerCase();
+function setStatus(message){
+$("status").textContent=message;
+}
 
+function sleep(ms){
+return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+function withTimeout(promise,ms,label){
+return Promise.race([
+promise,
+new Promise((_,reject)=>
+setTimeout(()=>reject(new Error(label+" timeout")),ms)
+)
+]);
+}
+
+/* Load ethers from two different CDNs */
+async function loadEthers(){
+if(window.ethers){
+ethersLib=window.ethers;
+return ethersLib;
+}
+
+const sources=[
+"https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js",
+"https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js"
+];
+
+for(const src of sources){
+try{
+await withTimeout(new Promise((resolve,reject)=>{
+const script=document.createElement("script");
+script.src=src;
+script.onload=resolve;
+script.onerror=()=>reject(new Error("CDN load failed"));
+document.head.appendChild(script);
+}),12000,"Ethers library");
+
+if(window.ethers){
+ethersLib=window.ethers;
+return ethersLib;
+}
+}catch(error){
+console.warn(src,error);
+}
+}
+
+throw new Error("Ethers library could not load. Check internet connection or CDN access.");
+}
+
+/* Build RPC connections */
+async function createConnections(){
+connections=[];
+
+for(let i=0;i<RPC_LIST.length;i++){
+const item=RPC_LIST[i];
+
+try{
+const provider=new ethersLib.JsonRpcProvider(
+item.url,
+56,
+{staticNetwork:true,batchMaxCount:1}
+);
+
+const chain=await withTimeout(
+provider.send("eth_chainId",[]),
+10000,
+item.name
+);
+
+if(BigInt(chain)!==56n){
+throw new Error("Wrong chain ID: "+chain);
+}
+
+const contract=new ethersLib.Contract(
+CONTRACT_ADDRESS,
+ABI,
+provider
+);
+
+connections.push({
+name:item.name,
+provider,
+contract
+});
+
+console.log("RPC connected:",item.name);
+
+}catch(error){
+console.warn("RPC failed:",item.name,error);
+}
+}
+
+if(!connections.length){
+throw new Error("All BNB RPC servers failed. Check internet connection.");
+}
+
+activeConnection=0;
+$("rpcName").textContent=connections[0].name;
+return true;
+}
+
+/* Retry using other working RPC connections */
+async function rpcCall(operation){
+if(!connections.length){
+await initialize();
+}
+
+let lastError=null;
+const total=connections.length;
+
+for(let attempt=0;attempt<total;attempt++){
+const index=(activeConnection+attempt)%total;
+const connection=connections[index];
+
+try{
+const result=await withTimeout(
+operation(connection),
+18000,
+connection.name
+);
+
+activeConnection=index;
+$("rpcName").textContent=connection.name;
+return result;
+
+}catch(error){
+lastError=error;
+console.warn("RPC call failed:",connection.name,error);
+}
+}
+
+throw lastError||new Error("All RPC servers failed.");
+}
+
+/* Initialize the blockchain system */
+let initPromise=null;
+
+async function initialize(){
+if(connections.length)return true;
+if(initPromise)return initPromise;
+
+initPromise=(async()=>{
+setStatus("Loading ethers library...");
+
+await loadEthers();
+
+setStatus("Testing BNB RPC servers...");
+
+await createConnections();
+
+setStatus(
+"BNB Mainnet connected through "+connections[activeConnection].name+
+" | Chain ID 56"
+);
+
+return true;
+})();
+
+try{
+return await initPromise;
+}catch(error){
+initPromise=null;
+throw error;
+}
+}
+
+/* Helpers */
 function esc(value){
 return String(value).replace(/[&<>"']/g,char=>({
 "&":"&amp;",
@@ -281,36 +413,17 @@ return address.slice(0,8)+"..."+address.slice(-6);
 
 function fmt(value){
 return Number(
-ethers.formatUnits(BigInt(value),decimals)
+ethersLib.formatUnits(BigInt(value.toString()),decimals)
 ).toLocaleString("en-US",{maximumFractionDigits:8});
 }
 
-function setStatus(message){
-$("status").textContent=message;
+function tupleValue(tuple,index){
+if(!tuple || tuple[index]===undefined || tuple[index]===null){
+throw new Error("Contract returned missing Matrix data at index "+index);
+}
+return BigInt(tuple[index].toString());
 }
 
-function delay(ms){
-return new Promise(resolve=>setTimeout(resolve,ms));
-}
-
-/* RPC retry system */
-async function retryCall(fn,attempts=3){
-let lastError;
-
-for(let attempt=1;attempt<=attempts;attempt++){
-try{
-return await fn();
-}catch(error){
-lastError=error;
-if(attempt<attempts){
-await delay(attempt*700);
-}
-}
-}
-throw lastError;
-}
-
-/* Small batches to reduce RPC pressure */
 async function mapBatch(items,fn){
 const output=[];
 const batchSize=3;
@@ -319,12 +432,13 @@ for(let i=0;i<items.length;i+=batchSize){
 const batch=items.slice(i,i+batchSize);
 
 const result=await Promise.all(
-batch.map(item=>retryCall(()=>fn(item)))
+batch.map(item=>rpcCall(connection=>fn(connection,item)))
 );
 
 output.push(...result);
-await delay(100);
+await sleep(100);
 }
+
 return output;
 }
 
@@ -360,21 +474,14 @@ $("refBtn").textContent="LOAD REFERRAL TREE";
 $("matrixBtn").textContent="LOAD MATRIX TEAM IDs (LEVEL 1–12)";
 }
 
-function matrixValue(state,index){
-if(!state || state[index]===undefined || state[index]===null){
-throw new Error("Matrix contract data missing at index "+index);
-}
-return BigInt(state[index].toString());
-}
-
-/* Load selected user's basic information */
-async function loadBase(){
+/* Search User ID */
+async function searchUser(){
 if(busy)return;
 
 const id=$("uid").value.trim();
 
 if(!/^[1-9][0-9]*$/.test(id)){
-setStatus("Please enter a valid User ID.");
+setStatus("Enter a valid User ID.");
 return;
 }
 
@@ -384,32 +491,41 @@ $("refBtn").disabled=true;
 $("matrixBtn").disabled=true;
 
 try{
-setStatus("Connecting to BNB Smart Chain...");
+await initialize();
 
-const [network,lastId,investment,token]=await Promise.all([
-retryCall(()=>provider.getNetwork()),
-retryCall(()=>contract.lastUserId()),
-retryCall(()=>contract.totalProjectInvestment()),
-retryCall(()=>contract.BTCB_TOKEN_ADDRESS())
+setStatus("Reading global contract counters...");
+
+const [lastId,investment,token]=await Promise.all([
+rpcCall(x=>x.contract.lastUserId()),
+rpcCall(x=>x.contract.totalProjectInvestment()),
+rpcCall(x=>x.contract.BTCB_TOKEN_ADDRESS())
 ]);
 
-if(network.chainId!==56n){
-throw new Error("Wrong blockchain network. Chain ID must be 56.");
-}
-
 const registered=lastId>0n?lastId-1n:0n;
-$("registered").textContent=registered.toLocaleString();
+
+$("registered").textContent=
+registered.toLocaleString();
 
 try{
-const tokenContract=new ethers.Contract(token,[
+const tokenInfo=await rpcCall(async x=>{
+const t=new ethersLib.Contract(token,[
 "function decimals() view returns(uint8)",
 "function symbol() view returns(string)"
-],provider);
+],x.provider);
 
-decimals=Number(await retryCall(()=>tokenContract.decimals()));
-symbol=await retryCall(()=>tokenContract.symbol());
+const [dec,sym]=await Promise.all([
+t.decimals(),
+t.symbol()
+]);
+
+return {decimals:Number(dec),symbol:sym};
+});
+
+decimals=tokenInfo.decimals;
+symbol=tokenInfo.symbol;
 
 }catch(error){
+console.warn("Token metadata unavailable:",error);
 decimals=18;
 symbol="BTCB (18 decimals assumed)";
 }
@@ -417,17 +533,21 @@ symbol="BTCB (18 decimals assumed)";
 $("investment").textContent=fmt(investment)+" "+symbol;
 
 if(BigInt(id)>=lastId){
-throw new Error("User ID not found. Latest registered ID: "+registered);
+throw new Error("User ID not found. Latest ID: "+registered);
 }
 
-const details=await retryCall(()=>contract.getUserDetails(id));
+setStatus("Loading User Profile...");
 
-if(!details[0] || details[0].toLowerCase()===ZERO){
-throw new Error("This User ID does not exist.");
+const details=await rpcCall(
+x=>x.contract.getUserDetails(id)
+);
+
+if(!details[0]||details[0].toLowerCase()===ZERO){
+throw new Error("User ID does not exist.");
 }
 
-currentAddress=details[0];
 currentId=id;
+currentAddress=details[0];
 
 $("profile").innerHTML=
 `<b>User ID:</b> ${esc(id)}<br>
@@ -443,13 +563,15 @@ $("directCount").textContent=details[3].toString();
 $("activeCount").textContent=details[4].toString();
 $("contractTeam").textContent=details[5].toString();
 
-const directIds=await retryCall(
-()=>contract.getDirectPartnerIds(id)
+setStatus("Loading Direct Referrals...");
+
+const directIds=await rpcCall(
+x=>x.contract.getDirectPartnerIds(id)
 );
 
 const directWallets=await mapBatch(
 directIds,
-userId=>contract.idToAddress(userId)
+(x,userId)=>x.contract.idToAddress(userId)
 );
 
 $("directList").innerHTML=directIds.length?
@@ -465,15 +587,19 @@ await showSpots();
 $("updated").textContent=new Date().toLocaleString();
 
 setStatus(
-"User profile loaded successfully. Click the Referral or Matrix button to load team data."
+"User profile loaded successfully. Referral and Matrix Teams are ready to load."
 );
 
 }catch(error){
 console.error(error);
+
 setStatus(
-"Search error: "+
+"SEARCH ERROR: "+
 (error.shortMessage||error.reason||error.message||String(error))
 );
+
+}catchFinallyPlaceholder();
+
 }finally{
 busy=false;
 $("searchBtn").disabled=false;
@@ -482,20 +608,20 @@ $("matrixBtn").disabled=!currentAddress;
 }
 }
 
-/* Load 14 matrix spots for selected level */
+/* 14 spots */
 async function showSpots(){
 if(!currentAddress)return;
 
 const level=Number($("matrixLevel").value);
 
 const [refs,state]=await Promise.all([
-retryCall(()=>contract.usersXMatrixReferrals(currentAddress,level)),
-retryCall(()=>contract.usersXMatrix(currentAddress,level))
+rpcCall(x=>x.contract.usersXMatrixReferrals(currentAddress,level)),
+rpcCall(x=>x.contract.usersXMatrix(currentAddress,level))
 ]);
 
 const ids=await mapBatch(
 refs,
-address=>contract.addressToId(address)
+(x,address)=>x.contract.addressToId(address)
 );
 
 let html="";
@@ -509,9 +635,7 @@ html+=`<div class="spot">
 <b>SPOT ${i+1}</b>
 <div class="sid">ID ${esc(userId)}</div>
 <small>${esc(wallet)}</small><br>
-<a target="_blank" href="https://bscscan.com/address/${wallet}">
-View Wallet
-</a>
+<a target="_blank" href="https://bscscan.com/address/${wallet}">View Wallet</a>
 </div>`;
 }else{
 html+=`<div class="spot">
@@ -524,8 +648,8 @@ html+=`<div class="spot">
 
 $("spotGrid").innerHTML=html;
 
-const reinvest=matrixValue(state,1);
-const teamSize=matrixValue(state,4);
+const reinvest=tupleValue(state,1);
+const teamSize=tupleValue(state,4);
 
 $("spotInfo").textContent=
 `Level ${level} | Filled ${refs.length}/14 | Reinvest ${reinvest} | Recorded Matrix Team Placements ${teamSize}`;
@@ -533,7 +657,7 @@ $("spotInfo").textContent=
 $("cycleCount").textContent=reinvest.toString();
 }
 
-/* Referral tree scan */
+/* Referral Team */
 async function loadReferral(){
 if(!currentId||busy||referralLoaded)return;
 
@@ -556,7 +680,7 @@ setStatus("Loading Referral Team — Depth "+depth+"...");
 
 const lists=await mapBatch(
 frontier,
-id=>contract.getDirectPartnerIds(id)
+(x,id)=>x.contract.getDirectPartnerIds(id)
 );
 
 let next=[];
@@ -573,9 +697,7 @@ next.push(child);
 levelIds.push(child);
 
 treeHtml+=
-`<div class="status">
-ID <b>${esc(child)}</b> &larr; Parent ID ${esc(frontier[i])}
-</div>`;
+`<div class="status">ID <b>${esc(child)}</b> &larr; Parent ID ${esc(frontier[i])}</div>`;
 }
 }
 
@@ -584,11 +706,9 @@ total+=levelIds.length;
 tableHtml+=`<tr>
 <td>${depth}</td>
 <td>${levelIds.length}</td>
-<td>
-${levelIds.map(x=>
-`<span class="idchip">ID ${esc(x)}</span>`
-).join("")||"—"}
-</td>
+<td>${levelIds.map(id=>
+`<span class="idchip">ID ${esc(id)}</span>`
+).join("")||"—"}</td>
 </tr>`;
 
 $("refTable").innerHTML=tableHtml;
@@ -616,17 +736,19 @@ setStatus("Referral Team loaded. Total IDs: "+total);
 }catch(error){
 console.error(error);
 $("refBtn").textContent="RETRY REFERRAL TREE";
+
 setStatus(
-"Referral scan error: "+
+"REFERRAL ERROR: "+
 (error.shortMessage||error.message||String(error))
 );
+
 }finally{
 busy=false;
 $("refBtn").disabled=false;
 }
 }
 
-/* Matrix Team scan: current stored referrals only */
+/* Matrix Team */
 async function loadMatrix(){
 if(!currentAddress||busy||matrixLoaded)return;
 
@@ -642,37 +764,20 @@ let levelHtml="";
 
 for(let level=1;level<=12;level++){
 
-setStatus(
-"Loading Matrix Team — Level "+level+" of 12..."
-);
+setStatus("Loading Matrix Level "+level+" of 12...");
 
 const [rootRefs,rootState]=await Promise.all([
-retryCall(()=>
-contract.usersXMatrixReferrals(currentAddress,level)
-),
-retryCall(()=>
-contract.usersXMatrix(currentAddress,level)
+rpcCall(x=>x.contract.usersXMatrixReferrals(currentAddress,level)),
+rpcCall(x=>x.contract.usersXMatrix(currentAddress,level))
 ]);
 
-/* Correct tuple indexes:
-   [0] currentReferrer
-   [1] reinvestCount
-   [2] heldTokenForUpgrade
-   [3] lastSpillUnderReceiverIndex
-   [4] totalTeamSize
-   [5] totalEarning
-*/
-
-const reinvest=matrixValue(rootState,1);
-const earning=matrixValue(rootState,5);
+const reinvest=tupleValue(rootState,1);
+const earning=tupleValue(rootState,5);
 
 totalEarning=totalEarning+earning;
 
-/* Start from root's current matrix referrals */
 const seen=new Set(
-rootRefs
-.map(address=>address.toLowerCase())
-.filter(address=>address!==ZERO)
+rootRefs.map(a=>a.toLowerCase()).filter(a=>a!==ZERO)
 );
 
 let frontier=[...seen];
@@ -682,16 +787,17 @@ while(frontier.length){
 wave++;
 
 setStatus(
-"Matrix Level "+level+": scanning wave "+wave+
-", found "+seen.size+" wallets..."
+"Matrix Level "+level+
+" | Scanning wave "+wave+
+" | Found wallets "+seen.size
 );
 
 const lists=await mapBatch(
 frontier,
-address=>contract.usersXMatrixReferrals(address,level)
+(x,address)=>x.contract.usersXMatrixReferrals(address,level)
 );
 
-const next=[];
+let next=[];
 
 for(const list of lists){
 for(const raw of list){
@@ -707,16 +813,15 @@ next.push(address);
 frontier=next;
 
 if(wave>1000){
-throw new Error("Matrix scan safety stop at level "+level);
+throw new Error("Matrix scan safety stop at Level "+level);
 }
 }
 
-/* Convert wallets to registered IDs */
 const addresses=[...seen];
 
 const idResults=await mapBatch(
 addresses,
-address=>contract.addressToId(address)
+(x,address)=>x.contract.addressToId(address)
 );
 
 const records=[];
@@ -743,9 +848,7 @@ tableHtml+=`<tr>
 
 levelHtml+=`<div class="levelbox">
 <details>
-<summary>
-LEVEL ${level} — ${records.length} UNIQUE IDs
-</summary>
+<summary>LEVEL ${level} — ${records.length} UNIQUE IDs</summary>
 <div>
 ${records.map(record=>
 chip(record.id,record.address)
@@ -754,55 +857,50 @@ chip(record.id,record.address)
 </details>
 </div>`;
 
-/* Show completed levels immediately */
 $("matrixTable").innerHTML=tableHtml;
 $("matrixIds").innerHTML=levelHtml;
 $("matrixCount").textContent=allIds.size.toLocaleString();
 $("matrixEarning").textContent=fmt(totalEarning)+" "+symbol;
 
-await delay(150);
+await sleep(100);
 }
 
 matrixLoaded=true;
-
 $("matrixContent").classList.remove("hidden");
 $("matrixBtn").textContent="HIDE MATRIX TEAM IDs";
 
 setStatus(
-"Matrix Team loaded successfully. Unique IDs across levels: "+
-allIds.size
+"Matrix Team loaded successfully. Unique IDs: "+allIds.size
 );
 
 }catch(error){
 console.error(error);
-
 $("matrixBtn").textContent="RETRY MATRIX TEAM SCAN";
 
 setStatus(
-"Matrix scan error: "+
+"MATRIX ERROR: "+
 (error.shortMessage||error.reason||error.message||String(error))
 );
+
 }finally{
 busy=false;
 $("matrixBtn").disabled=false;
 }
 }
 
-/* Buttons */
-$("searchBtn").addEventListener("click",loadBase);
+/* UI actions */
+$("searchBtn").addEventListener("click",searchUser);
 
 $("uid").addEventListener("keydown",event=>{
-if(event.key==="Enter")loadBase();
+if(event.key==="Enter")searchUser();
 });
 
 $("refBtn").addEventListener("click",async()=>{
 if(referralLoaded){
 $("refContent").classList.toggle("hidden");
-
 $("refBtn").textContent=
 $("refContent").classList.contains("hidden")?
-"OPEN REFERRAL TREE":
-"HIDE REFERRAL TREE";
+"OPEN REFERRAL TREE":"HIDE REFERRAL TREE";
 }else{
 await loadReferral();
 }
@@ -811,11 +909,9 @@ await loadReferral();
 $("matrixBtn").addEventListener("click",async()=>{
 if(matrixLoaded){
 $("matrixContent").classList.toggle("hidden");
-
 $("matrixBtn").textContent=
 $("matrixContent").classList.contains("hidden")?
-"OPEN MATRIX TEAM IDs":
-"HIDE MATRIX TEAM IDs";
+"OPEN MATRIX TEAM IDs":"HIDE MATRIX TEAM IDs";
 }else{
 await loadMatrix();
 }
@@ -824,24 +920,15 @@ await loadMatrix();
 $("matrixLevel").addEventListener("change",()=>{
 if(currentAddress&&!busy){
 showSpots().catch(error=>{
-setStatus("Matrix spot error: "+error.message);
+setStatus("SPOT ERROR: "+error.message);
 });
 }
 });
 
-/* Connection check */
-retryCall(()=>provider.getNetwork())
-.then(network=>{
-if(network.chainId===56n){
-setStatus(
-"BNB Mainnet connected | Chain ID 56 | Enter User ID."
-);
-}else{
-setStatus("Incorrect network. Expected BNB Chain 56.");
-}
-})
-.catch(error=>{
-setStatus("RPC connection error: "+error.message);
+/* Start connection automatically */
+initialize().catch(error=>{
+console.error(error);
+setStatus("CONNECTION ERROR: "+error.message);
 });
 
 })();
