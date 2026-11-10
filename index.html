@@ -9,14 +9,14 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
-header{text-align:center;padding:23px 12px;background:#111b2d;border-bottom:2px solid #e7bd55}
+header{text-align:center;padding:24px 12px;background:#111b2d;border-bottom:2px solid #e7bd55}
 h1{margin:0;color:#e7bd55;font-size:25px}
 .sub{color:#a9b8cd;font-size:12px;margin-top:8px}
 main{max-width:1100px;margin:auto;padding:12px}
 .panel{background:#111b2d;border:1px solid #2a3b56;border-radius:14px;padding:16px;margin:12px 0}
 h2{font-size:18px;color:#e7bd55;margin:0 0 13px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
 .card{background:#091525;border:1px solid #2a3b56;border-radius:11px;padding:13px}
 .label{font-size:12px;color:#a9b8cd}
 .value{font-size:22px;font-weight:bold;margin:8px 0;overflow-wrap:anywhere}
@@ -25,7 +25,7 @@ label{display:block;color:#a9b8cd;font-size:13px;margin-bottom:6px}
 input,select{width:100%;background:#081222;color:white;border:1px solid #3a506e;border-radius:9px;padding:13px;font-size:16px;margin-bottom:12px}
 button{border:0;border-radius:9px;padding:13px;font-weight:bold;cursor:pointer}
 .primary{background:#e7bd55;color:#151515;width:100%}
-.secondary{background:#263e60;color:white;width:100%;margin-top:8px}
+.secondary{background:#263e60;color:white;width:100%;margin-top:9px}
 button:disabled{opacity:.5;cursor:wait}
 .status{font-size:13px;color:#c5d3e6;line-height:1.7;overflow-wrap:anywhere}
 .muted{color:#a9b8cd;font-size:12px}
@@ -40,15 +40,19 @@ th{color:#e7bd55}
 .spot b{color:#e7bd55;font-size:12px}
 .spot .sid{font-size:18px;font-weight:bold;margin:7px 0}
 a{color:#8fc5ff}
-.hidden{display:none!important}
 .result{margin-top:12px;padding:10px;background:#091525;border:1px solid #2a3b56;border-radius:9px}
 .levelbox{border:1px solid #34445d;border-radius:9px;padding:10px;margin:9px 0}
 .levelbox summary{cursor:pointer;color:#e7bd55;font-weight:bold}
+.hidden{display:none!important}
 footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
-@media(min-width:750px){.grid{grid-template-columns:repeat(4,1fr)}.spots{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:750px){
+.grid{grid-template-columns:repeat(4,1fr)}
+.spots{grid-template-columns:repeat(4,1fr)}
+}
 </style>
 </head>
 <body>
+
 <header>
 <h1>₿ B-TITAN LIVE TEAM EXPLORER</h1>
 <div class="sub">BNB SMART CHAIN MAINNET • LIVE TEAM COUNTER</div>
@@ -102,22 +106,46 @@ footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
 
 <section class="panel">
 <h2>USER PROFILE</h2>
-<div id="profile" class="status">Search an ID.</div>
+<div id="profile" class="status">Search a User ID.</div>
 <div class="cards" style="margin-top:12px">
-<div class="card"><div class="label">USER TOTAL INCOME</div><div class="value green" id="userIncome">—</div></div>
-<div class="card"><div class="label">MATRIX TOTAL EARNING</div><div class="value gold" id="matrixEarning">—</div></div>
-<div class="card"><div class="label">DIRECT REFERRALS</div><div class="value blue" id="directCount">—</div></div>
-<div class="card"><div class="label">ACTIVE LEVELS</div><div class="value" id="activeCount">—</div></div>
+<div class="card">
+<div class="label">USER TOTAL INCOME</div>
+<div class="value green" id="userIncome">—</div>
+</div>
+<div class="card">
+<div class="label">MATRIX TOTAL EARNING</div>
+<div class="value gold" id="matrixEarning">—</div>
+</div>
+<div class="card">
+<div class="label">DIRECT REFERRALS</div>
+<div class="value blue" id="directCount">—</div>
+</div>
+<div class="card">
+<div class="label">ACTIVE LEVELS</div>
+<div class="value" id="activeCount">—</div>
+</div>
 </div>
 </section>
 
 <section class="panel">
 <h2>TEAM COUNTERS</h2>
 <div class="cards">
-<div class="card"><div class="label">TOTAL REFERRAL TEAM</div><div class="value blue" id="refCount">—</div></div>
-<div class="card"><div class="label">TOTAL MATRIX TEAM</div><div class="value green" id="matrixCount">—</div></div>
-<div class="card"><div class="label">CONTRACT TEAM SIZE</div><div class="value" id="contractTeam">—</div></div>
-<div class="card"><div class="label">CURRENT CYCLE</div><div class="value" id="cycleCount">—</div></div>
+<div class="card">
+<div class="label">TOTAL REFERRAL TEAM</div>
+<div class="value blue" id="refCount">—</div>
+</div>
+<div class="card">
+<div class="label">TOTAL MATRIX TEAM</div>
+<div class="value green" id="matrixCount">—</div>
+</div>
+<div class="card">
+<div class="label">CONTRACT TEAM SIZE</div>
+<div class="value" id="contractTeam">—</div>
+</div>
+<div class="card">
+<div class="label">CURRENT CYCLE</div>
+<div class="value" id="cycleCount">—</div>
+</div>
 </div>
 </section>
 
@@ -130,8 +158,12 @@ footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
 <h2>REFERRAL TEAM LEVEL-WISE</h2>
 <div class="scroll">
 <table>
-<thead><tr><th>Depth</th><th>Total IDs</th><th>IDs</th></tr></thead>
-<tbody id="refTable"><tr><td colspan="3">Search an ID and load Referral Team.</td></tr></tbody>
+<thead>
+<tr><th>Depth</th><th>Total IDs</th><th>IDs</th></tr>
+</thead>
+<tbody id="refTable">
+<tr><td colspan="3">Search a User ID first.</td></tr>
+</tbody>
 </table>
 </div>
 <button class="secondary" id="refBtn" disabled>LOAD REFERRAL TREE</button>
@@ -150,11 +182,22 @@ footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
 <h2>MATRIX TEAM LEVEL-WISE</h2>
 <div class="scroll">
 <table>
-<thead><tr><th>Level</th><th>Unique IDs</th><th>Root Spots</th><th>Reinvest</th></tr></thead>
-<tbody id="matrixTable"><tr><td colspan="4">Search an ID and load Matrix Team.</td></tr></tbody>
+<thead>
+<tr>
+<th>Level</th>
+<th>Unique IDs</th>
+<th>Root Spots</th>
+<th>Reinvest</th>
+</tr>
+</thead>
+<tbody id="matrixTable">
+<tr><td colspan="4">Search a User ID first.</td></tr>
+</tbody>
 </table>
 </div>
-<button class="secondary" id="matrixBtn" disabled>LOAD MATRIX TEAM IDs (LEVEL 1–12)</button>
+<button class="secondary" id="matrixBtn" disabled>
+LOAD MATRIX TEAM IDs (LEVEL 1–12)
+</button>
 <div id="matrixContent" class="result hidden">
 <div id="matrixIds"></div>
 </div>
@@ -165,7 +208,9 @@ footer{text-align:center;color:#a9b8cd;font-size:12px;padding:22px}
 <div class="status">
 BNB Smart Chain Mainnet • Chain ID 56<br>
 Contract:
-<a target="_blank" href="https://bscscan.com/address/0xD6759d47Fccdef7b8E318479cEC4D128366f2a44">View on BscScan</a><br>
+<a target="_blank" href="https://bscscan.com/address/0xD6759d47Fccdef7b8E318479cEC4D128366f2a44">
+View on BscScan
+</a><br>
 Last Updated: <span id="updated">—</span>
 </div>
 </section>
@@ -180,6 +225,7 @@ Large scans may take time or encounter RPC limits.
 </div>
 
 </main>
+
 <footer>B-TITAN LIVE TEAM EXPLORER</footer>
 
 <script>
@@ -202,8 +248,12 @@ const ABI=[
 ];
 
 const $=id=>document.getElementById(id);
-const provider=new ethers.JsonRpcProvider(RPC,56,{staticNetwork:true});
-const c=new ethers.Contract(ADDRESS,ABI,provider);
+
+const provider=new ethers.JsonRpcProvider(
+RPC,56,{staticNetwork:true}
+);
+
+const contract=new ethers.Contract(ADDRESS,ABI,provider);
 
 let decimals=18;
 let symbol="BTC";
@@ -212,65 +262,117 @@ let currentId=null;
 let busy=false;
 let referralLoaded=false;
 let matrixLoaded=false;
-let matrixEarningRaw=0n;
 
 const ZERO=ethers.ZeroAddress.toLowerCase();
 
-function esc(s){
-return String(s).replace(/[&<>"']/g,x=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[x]));
+function esc(value){
+return String(value).replace(/[&<>"']/g,char=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+}[char]));
 }
 
-function short(a){
-return a.slice(0,8)+"..."+a.slice(-6);
+function short(address){
+return address.slice(0,8)+"..."+address.slice(-6);
 }
 
-function fmt(n){
-return Number(ethers.formatUnits(n,decimals)).toLocaleString("en-US",{
-maximumFractionDigits:8
-});
+function fmt(value){
+return Number(
+ethers.formatUnits(BigInt(value),decimals)
+).toLocaleString("en-US",{maximumFractionDigits:8});
 }
 
-function setStatus(s){
-$("status").textContent=s;
+function setStatus(message){
+$("status").textContent=message;
 }
 
-async function mapBatch(arr,fn){
-let out=[];
-for(let i=0;i<arr.length;i+=5){
-const part=await Promise.all(arr.slice(i,i+5).map(fn));
-out.push(...part);
+function delay(ms){
+return new Promise(resolve=>setTimeout(resolve,ms));
 }
-return out;
+
+/* RPC retry system */
+async function retryCall(fn,attempts=3){
+let lastError;
+
+for(let attempt=1;attempt<=attempts;attempt++){
+try{
+return await fn();
+}catch(error){
+lastError=error;
+if(attempt<attempts){
+await delay(attempt*700);
+}
+}
+}
+throw lastError;
+}
+
+/* Small batches to reduce RPC pressure */
+async function mapBatch(items,fn){
+const output=[];
+const batchSize=3;
+
+for(let i=0;i<items.length;i+=batchSize){
+const batch=items.slice(i,i+batchSize);
+
+const result=await Promise.all(
+batch.map(item=>retryCall(()=>fn(item)))
+);
+
+output.push(...result);
+await delay(100);
+}
+return output;
 }
 
 function chip(id,address){
-return `<span class="idchip"><b>ID ${esc(id)}</b><br>${esc(short(address))}<br>${esc(address)}</span>`;
+return `<span class="idchip">
+<b>ID ${esc(id)}</b><br>
+${esc(short(address))}<br>
+${esc(address)}
+</span>`;
 }
 
 function resetTeamViews(){
 referralLoaded=false;
 matrixLoaded=false;
+
 $("refCount").textContent="—";
 $("matrixCount").textContent="—";
-$("refTable").innerHTML='<tr><td colspan="3">Click LOAD REFERRAL TREE.</td></tr>';
-$("matrixTable").innerHTML='<tr><td colspan="4">Click LOAD MATRIX TEAM IDs.</td></tr>';
+$("matrixEarning").textContent="—";
+
+$("refTable").innerHTML=
+'<tr><td colspan="3">Click LOAD REFERRAL TREE.</td></tr>';
+
+$("matrixTable").innerHTML=
+'<tr><td colspan="4">Click LOAD MATRIX TEAM IDs.</td></tr>';
+
 $("refTree").innerHTML="";
 $("matrixIds").innerHTML="";
+
 $("refContent").classList.add("hidden");
 $("matrixContent").classList.add("hidden");
+
 $("refBtn").textContent="LOAD REFERRAL TREE";
 $("matrixBtn").textContent="LOAD MATRIX TEAM IDs (LEVEL 1–12)";
-$("refBtn").disabled=false;
-$("matrixBtn").disabled=false;
-$("matrixEarning").textContent="—";
-$("matrixCount").textContent="—";
 }
 
+function matrixValue(state,index){
+if(!state || state[index]===undefined || state[index]===null){
+throw new Error("Matrix contract data missing at index "+index);
+}
+return BigInt(state[index].toString());
+}
+
+/* Load selected user's basic information */
 async function loadBase(){
 if(busy)return;
+
 const id=$("uid").value.trim();
+
 if(!/^[1-9][0-9]*$/.test(id)){
 setStatus("Please enter a valid User ID.");
 return;
@@ -285,13 +387,15 @@ try{
 setStatus("Connecting to BNB Smart Chain...");
 
 const [network,lastId,investment,token]=await Promise.all([
-provider.getNetwork(),
-c.lastUserId(),
-c.totalProjectInvestment(),
-c.BTCB_TOKEN_ADDRESS()
+retryCall(()=>provider.getNetwork()),
+retryCall(()=>contract.lastUserId()),
+retryCall(()=>contract.totalProjectInvestment()),
+retryCall(()=>contract.BTCB_TOKEN_ADDRESS())
 ]);
 
-if(network.chainId!==56n)throw Error("Wrong blockchain network.");
+if(network.chainId!==56n){
+throw new Error("Wrong blockchain network. Chain ID must be 56.");
+}
 
 const registered=lastId>0n?lastId-1n:0n;
 $("registered").textContent=registered.toLocaleString();
@@ -301,56 +405,75 @@ const tokenContract=new ethers.Contract(token,[
 "function decimals() view returns(uint8)",
 "function symbol() view returns(string)"
 ],provider);
-decimals=Number(await tokenContract.decimals());
-symbol=await tokenContract.symbol();
-}catch(e){
+
+decimals=Number(await retryCall(()=>tokenContract.decimals()));
+symbol=await retryCall(()=>tokenContract.symbol());
+
+}catch(error){
 decimals=18;
-symbol="BTC (assumed 18 decimals)";
+symbol="BTCB (18 decimals assumed)";
 }
 
 $("investment").textContent=fmt(investment)+" "+symbol;
 
 if(BigInt(id)>=lastId){
-throw Error("User ID not found. Latest registered ID: "+registered);
+throw new Error("User ID not found. Latest registered ID: "+registered);
 }
 
-const d=await c.getUserDetails(id);
-if(d[0].toLowerCase()===ZERO)throw Error("This User ID does not exist.");
+const details=await retryCall(()=>contract.getUserDetails(id));
 
-currentAddress=d[0];
+if(!details[0] || details[0].toLowerCase()===ZERO){
+throw new Error("This User ID does not exist.");
+}
+
+currentAddress=details[0];
 currentId=id;
 
 $("profile").innerHTML=
 `<b>User ID:</b> ${esc(id)}<br>
-<b>Wallet:</b> ${esc(d[0])}<br>
-<b>Referrer Wallet:</b> ${esc(d[1])}<br>
-<b>Referrer ID:</b> ${esc(d[2])}<br>
-<b>Registration:</b> ${new Date(Number(d[6])*1000).toLocaleString()}<br>
+<b>Wallet:</b> ${esc(details[0])}<br>
+<b>Referrer Wallet:</b> ${esc(details[1])}<br>
+<b>Referrer ID:</b> ${esc(details[2])}<br>
+<b>Registration:</b> ${new Date(Number(details[6])*1000).toLocaleString()}<br>
 <b>Token:</b> ${esc(token)}<br>
 <b>Token Decimals:</b> ${decimals}`;
 
-$("userIncome").textContent=fmt(d[7])+" "+symbol;
-$("directCount").textContent=d[3].toString();
-$("activeCount").textContent=d[4].toString();
-$("contractTeam").textContent=d[5].toString();
+$("userIncome").textContent=fmt(details[7])+" "+symbol;
+$("directCount").textContent=details[3].toString();
+$("activeCount").textContent=details[4].toString();
+$("contractTeam").textContent=details[5].toString();
 
-const directs=await c.getDirectPartnerIds(id);
-const directWallets=await mapBatch(directs,x=>c.idToAddress(x));
+const directIds=await retryCall(
+()=>contract.getDirectPartnerIds(id)
+);
 
-$("directList").innerHTML=directs.length?
-directs.map((x,i)=>chip(x.toString(),directWallets[i])).join(""):
-"No direct referrals.";
+const directWallets=await mapBatch(
+directIds,
+userId=>contract.idToAddress(userId)
+);
+
+$("directList").innerHTML=directIds.length?
+directIds.map((userId,index)=>
+chip(userId.toString(),directWallets[index])
+).join("")
+:"No direct referrals.";
 
 resetTeamViews();
 
 await showSpots();
 
 $("updated").textContent=new Date().toLocaleString();
-setStatus("User profile loaded. Now select LOAD REFERRAL TREE or LOAD MATRIX TEAM IDs.");
 
-}catch(e){
-console.error(e);
-setStatus("Error: "+(e.shortMessage||e.reason||e.message||String(e)));
+setStatus(
+"User profile loaded successfully. Click the Referral or Matrix button to load team data."
+);
+
+}catch(error){
+console.error(error);
+setStatus(
+"Search error: "+
+(error.shortMessage||error.reason||error.message||String(error))
+);
 }finally{
 busy=false;
 $("searchBtn").disabled=false;
@@ -359,28 +482,36 @@ $("matrixBtn").disabled=!currentAddress;
 }
 }
 
+/* Load 14 matrix spots for selected level */
 async function showSpots(){
 if(!currentAddress)return;
 
 const level=Number($("matrixLevel").value);
 
 const [refs,state]=await Promise.all([
-c.usersXMatrixReferrals(currentAddress,level),
-c.usersXMatrix(currentAddress,level)
+retryCall(()=>contract.usersXMatrixReferrals(currentAddress,level)),
+retryCall(()=>contract.usersXMatrix(currentAddress,level))
 ]);
 
-const ids=await mapBatch(refs,a=>c.addressToId(a));
+const ids=await mapBatch(
+refs,
+address=>contract.addressToId(address)
+);
+
 let html="";
 
 for(let i=0;i<14;i++){
 if(i<refs.length){
 const wallet=refs[i];
 const userId=ids[i].toString();
+
 html+=`<div class="spot">
 <b>SPOT ${i+1}</b>
 <div class="sid">ID ${esc(userId)}</div>
 <small>${esc(wallet)}</small><br>
-<a target="_blank" href="https://bscscan.com/address/${wallet}">View Wallet</a>
+<a target="_blank" href="https://bscscan.com/address/${wallet}">
+View Wallet
+</a>
 </div>`;
 }else{
 html+=`<div class="spot">
@@ -392,12 +523,17 @@ html+=`<div class="spot">
 }
 
 $("spotGrid").innerHTML=html;
-$("spotInfo").textContent=
-`Level ${level} | Filled ${refs.length}/14 | Reinvest ${state.reinvestCount} | Recorded Matrix Team Placements ${state.totalTeamSize}`;
 
-$("cycleCount").textContent=state.reinvestCount.toString();
+const reinvest=matrixValue(state,1);
+const teamSize=matrixValue(state,4);
+
+$("spotInfo").textContent=
+`Level ${level} | Filled ${refs.length}/14 | Reinvest ${reinvest} | Recorded Matrix Team Placements ${teamSize}`;
+
+$("cycleCount").textContent=reinvest.toString();
 }
 
+/* Referral tree scan */
 async function loadReferral(){
 if(!currentId||busy||referralLoaded)return;
 
@@ -406,29 +542,40 @@ $("refBtn").disabled=true;
 $("refBtn").textContent="LOADING REFERRAL TEAM...";
 
 try{
-let seen=new Set([String(currentId)]);
+const seen=new Set([String(currentId)]);
 let frontier=[String(currentId)];
 let depth=0;
 let total=0;
-let treeHtml="";
 let tableHtml="";
+let treeHtml="";
 
 while(frontier.length){
 depth++;
+
 setStatus("Loading Referral Team — Depth "+depth+"...");
 
-const lists=await mapBatch(frontier,id=>c.getDirectPartnerIds(id));
+const lists=await mapBatch(
+frontier,
+id=>contract.getDirectPartnerIds(id)
+);
+
 let next=[];
 let levelIds=[];
 
 for(let i=0;i<lists.length;i++){
 for(const raw of lists[i]){
 const child=raw.toString();
+
 if(seen.has(child))continue;
+
 seen.add(child);
 next.push(child);
 levelIds.push(child);
-treeHtml+=`<div class="status">ID <b>${esc(child)}</b> &larr; Parent ID ${esc(frontier[i])}</div>`;
+
+treeHtml+=
+`<div class="status">
+ID <b>${esc(child)}</b> &larr; Parent ID ${esc(frontier[i])}
+</div>`;
 }
 }
 
@@ -437,7 +584,11 @@ total+=levelIds.length;
 tableHtml+=`<tr>
 <td>${depth}</td>
 <td>${levelIds.length}</td>
-<td>${levelIds.map(x=>`<span class="idchip">ID ${esc(x)}</span>`).join("")||"—"}</td>
+<td>
+${levelIds.map(x=>
+`<span class="idchip">ID ${esc(x)}</span>`
+).join("")||"—"}
+</td>
 </tr>`;
 
 $("refTable").innerHTML=tableHtml;
@@ -445,28 +596,37 @@ $("refTree").innerHTML=treeHtml||"No downline found.";
 $("refCount").textContent=total.toLocaleString();
 
 frontier=next;
-if(depth>1000)throw Error("Referral scan safety stop.");
+
+if(depth>1000){
+throw new Error("Referral scan safety stop.");
+}
 }
 
-if(!depth){
-$("refTable").innerHTML='<tr><td colspan="3">No referrals found.</td></tr>';
+if(total===0){
+$("refTable").innerHTML=
+'<tr><td colspan="3">No referrals found.</td></tr>';
 }
 
 referralLoaded=true;
 $("refContent").classList.remove("hidden");
 $("refBtn").textContent="HIDE REFERRAL TREE";
-setStatus("Referral Team loaded successfully. Total Referral IDs: "+total);
 
-}catch(e){
-console.error(e);
-setStatus("Referral scan error: "+(e.shortMessage||e.message||String(e)));
+setStatus("Referral Team loaded. Total IDs: "+total);
+
+}catch(error){
+console.error(error);
 $("refBtn").textContent="RETRY REFERRAL TREE";
+setStatus(
+"Referral scan error: "+
+(error.shortMessage||error.message||String(error))
+);
 }finally{
 busy=false;
 $("refBtn").disabled=false;
 }
 }
 
+/* Matrix Team scan: current stored referrals only */
 async function loadMatrix(){
 if(!currentAddress||busy||matrixLoaded)return;
 
@@ -475,106 +635,174 @@ $("matrixBtn").disabled=true;
 $("matrixBtn").textContent="LOADING MATRIX TEAM...";
 
 try{
-let allIds=new Set();
+const allIds=new Set();
 let totalEarning=0n;
 let tableHtml="";
 let levelHtml="";
 
 for(let level=1;level<=12;level++){
-setStatus("Loading Matrix Team — Level "+level+" of 12...");
 
-const refs=await c.usersXMatrixReferrals(currentAddress,level);
-const state=await c.usersXMatrix(currentAddress,level);
-
-let seen=new Set(
-refs.map(a=>a.toLowerCase()).filter(a=>a!==ZERO)
+setStatus(
+"Loading Matrix Team — Level "+level+" of 12..."
 );
+
+const [rootRefs,rootState]=await Promise.all([
+retryCall(()=>
+contract.usersXMatrixReferrals(currentAddress,level)
+),
+retryCall(()=>
+contract.usersXMatrix(currentAddress,level)
+]);
+
+/* Correct tuple indexes:
+   [0] currentReferrer
+   [1] reinvestCount
+   [2] heldTokenForUpgrade
+   [3] lastSpillUnderReceiverIndex
+   [4] totalTeamSize
+   [5] totalEarning
+*/
+
+const reinvest=matrixValue(rootState,1);
+const earning=matrixValue(rootState,5);
+
+totalEarning=totalEarning+earning;
+
+/* Start from root's current matrix referrals */
+const seen=new Set(
+rootRefs
+.map(address=>address.toLowerCase())
+.filter(address=>address!==ZERO)
+);
+
 let frontier=[...seen];
 let wave=0;
 
 while(frontier.length){
 wave++;
-const lists=await mapBatch(
-frontier,
-a=>c.usersXMatrixReferrals(a,level)
+
+setStatus(
+"Matrix Level "+level+": scanning wave "+wave+
+", found "+seen.size+" wallets..."
 );
 
-let next=[];
+const lists=await mapBatch(
+frontier,
+address=>contract.usersXMatrixReferrals(address,level)
+);
+
+const next=[];
 
 for(const list of lists){
 for(const raw of list){
-const a=raw.toLowerCase();
-if(a===ZERO||seen.has(a))continue;
-seen.add(a);
-next.push(a);
+const address=raw.toLowerCase();
+
+if(address===ZERO||seen.has(address))continue;
+
+seen.add(address);
+next.push(address);
 }
 }
 
 frontier=next;
-if(wave>1000)throw Error("Matrix scan safety stop at level "+level);
+
+if(wave>1000){
+throw new Error("Matrix scan safety stop at level "+level);
+}
 }
 
+/* Convert wallets to registered IDs */
 const addresses=[...seen];
-const ids=await mapBatch(addresses,a=>c.addressToId(a));
 
-let records=[];
+const idResults=await mapBatch(
+addresses,
+address=>contract.addressToId(address)
+);
+
+const records=[];
+
 for(let i=0;i<addresses.length;i++){
-const userId=ids[i].toString();
+const userId=idResults[i].toString();
+
 if(userId!=="0"){
-records.push({id:userId,address:addresses[i]});
+records.push({
+id:userId,
+address:addresses[i]
+});
+
 allIds.add(userId);
 }
 }
 
-totalEarning = totalEarning + BigInt(state.totalEarning.toString());
-
 tableHtml+=`<tr>
 <td>${level}</td>
 <td>${records.length}</td>
-<td>${refs.length}/14</td>
-<td>${state.reinvestCount}</td>
+<td>${rootRefs.length}/14</td>
+<td>${reinvest.toString()}</td>
 </tr>`;
 
 levelHtml+=`<div class="levelbox">
 <details>
-<summary>LEVEL ${level} — ${records.length} UNIQUE IDs</summary>
-<div>${records.map(x=>chip(x.id,x.address)).join("")||"No IDs found."}</div>
+<summary>
+LEVEL ${level} — ${records.length} UNIQUE IDs
+</summary>
+<div>
+${records.map(record=>
+chip(record.id,record.address)
+).join("")||"No IDs found."}
+</div>
 </details>
 </div>`;
 
+/* Show completed levels immediately */
 $("matrixTable").innerHTML=tableHtml;
 $("matrixIds").innerHTML=levelHtml;
 $("matrixCount").textContent=allIds.size.toLocaleString();
 $("matrixEarning").textContent=fmt(totalEarning)+" "+symbol;
+
+await delay(150);
 }
 
-matrixEarningRaw=totalEarning;
 matrixLoaded=true;
+
 $("matrixContent").classList.remove("hidden");
 $("matrixBtn").textContent="HIDE MATRIX TEAM IDs";
-setStatus("Matrix Team loaded successfully. Unique IDs across levels: "+allIds.size);
 
-}catch(e){
-console.error(e);
-setStatus("Matrix scan error: "+(e.shortMessage||e.message||String(e)));
+setStatus(
+"Matrix Team loaded successfully. Unique IDs across levels: "+
+allIds.size
+);
+
+}catch(error){
+console.error(error);
+
 $("matrixBtn").textContent="RETRY MATRIX TEAM SCAN";
+
+setStatus(
+"Matrix scan error: "+
+(error.shortMessage||error.reason||error.message||String(error))
+);
 }finally{
 busy=false;
 $("matrixBtn").disabled=false;
 }
 }
 
+/* Buttons */
 $("searchBtn").addEventListener("click",loadBase);
 
-$("uid").addEventListener("keydown",e=>{
-if(e.key==="Enter")loadBase();
+$("uid").addEventListener("keydown",event=>{
+if(event.key==="Enter")loadBase();
 });
 
 $("refBtn").addEventListener("click",async()=>{
 if(referralLoaded){
 $("refContent").classList.toggle("hidden");
-$("refBtn").textContent=$("refContent").classList.contains("hidden")?
-"OPEN REFERRAL TREE":"HIDE REFERRAL TREE";
+
+$("refBtn").textContent=
+$("refContent").classList.contains("hidden")?
+"OPEN REFERRAL TREE":
+"HIDE REFERRAL TREE";
 }else{
 await loadReferral();
 }
@@ -583,8 +811,11 @@ await loadReferral();
 $("matrixBtn").addEventListener("click",async()=>{
 if(matrixLoaded){
 $("matrixContent").classList.toggle("hidden");
-$("matrixBtn").textContent=$("matrixContent").classList.contains("hidden")?
-"OPEN MATRIX TEAM IDs":"HIDE MATRIX TEAM IDs";
+
+$("matrixBtn").textContent=
+$("matrixContent").classList.contains("hidden")?
+"OPEN MATRIX TEAM IDs":
+"HIDE MATRIX TEAM IDs";
 }else{
 await loadMatrix();
 }
@@ -592,17 +823,29 @@ await loadMatrix();
 
 $("matrixLevel").addEventListener("change",()=>{
 if(currentAddress&&!busy){
-showSpots().catch(e=>setStatus("Matrix spot error: "+e.message));
+showSpots().catch(error=>{
+setStatus("Matrix spot error: "+error.message);
+});
 }
 });
 
-provider.getNetwork().then(n=>{
-setStatus("BNB Mainnet connected | Chain ID "+n.chainId+" | Enter User ID.");
-}).catch(e=>{
-setStatus("RPC connection error: "+e.message);
+/* Connection check */
+retryCall(()=>provider.getNetwork())
+.then(network=>{
+if(network.chainId===56n){
+setStatus(
+"BNB Mainnet connected | Chain ID 56 | Enter User ID."
+);
+}else{
+setStatus("Incorrect network. Expected BNB Chain 56.");
+}
+})
+.catch(error=>{
+setStatus("RPC connection error: "+error.message);
 });
 
 })();
 </script>
+
 </body>
 </html>
