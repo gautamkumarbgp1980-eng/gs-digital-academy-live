@@ -41,6 +41,8 @@ summary{color:var(--gold);font-weight:bold;cursor:pointer}
 a{color:#9fcaff}
 .warn{background:#2c2517;color:#f4dca8;padding:13px;border-radius:10px;line-height:1.7;font-size:12px}
 footer{text-align:center;color:#9daec4;padding:25px}
+.progress{height:8px;background:#26364b;border-radius:20px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,#f3c66a,#55dda4);transition:width .2s}
 @media(min-width:750px){.grid{grid-template-columns:repeat(4,1fr)}.spots{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
@@ -96,12 +98,13 @@ footer{text-align:center;color:#9daec4;padding:25px}
 <button id="loadBtn" onclick="loadTeam()" disabled>LOAD COMPLETE TEAM & SLOT REPORT</button>
 <button id="teamCsv" onclick="exportTeam()" disabled>EXPORT TEAM CSV</button>
 <p id="teamStatus" class="muted">Not loaded</p>
+<div class="progress"><div id="progressBar"></div></div>
 <div id="teamDetails"></div>
 </section>
 
 <section>
 <h2>ACTIVE LEADERS — SLOT 1 TO 12</h2>
-<p class="muted">चुने हुए User ID की Referral Team में प्रत्येक Slot पर Active Leaders की गिनती।</p>
+<p class="muted">चुने हुए User ID की Referral Team में प्रत्येक Slot पर Active Leaders की गिनती। एक Leader कई Slots में गिना जा सकता है।</p>
 <div class="scroll">
 <table>
 <thead><tr><th>SLOT</th><th>ACTIVE LEADERS</th><th>TEAM CHECKED</th></tr></thead>
@@ -126,7 +129,7 @@ footer{text-align:center;color:#9daec4;padding:25px}
 </section>
 
 <div class="warn">
-This is a read-only blockchain dashboard. Slot counts are calculated from the selected user's referral downline using the contract's isUserSlotActive function. A leader can appear in multiple slots. The selected root ID is excluded from downline counts. Historical matrix cycles and transaction history are not included. Large teams may require many RPC requests, and incomplete scans must not be treated as complete results.
+Read-only blockchain dashboard. Slot counts use the contract's isUserSlotActive function for every member of the selected user's referral downline. The selected root ID is excluded. A leader may appear in multiple slots. Historical matrix cycles are not included. If RPC requests fail, the report will show an error rather than treating missing results as zero.
 </div>
 </main>
 
@@ -147,6 +150,7 @@ const ABI=[
 "function totalProjectInvestment() view returns(uint256)",
 "function BTCB_TOKEN_ADDRESS() view returns(address)",
 "function idToAddress(uint256) view returns(address)",
+"function addressToId(address) view returns(uint256)",
 "function getUserDetails(uint256) view returns(address,address,uint256,uint256,uint8,uint256,uint256,uint256)",
 "function getDirectPartnerIds(uint256) view returns(uint256[])",
 "function isUserSlotActive(uint256,uint8) view returns(bool)",
@@ -172,15 +176,18 @@ $("level").add(new Option("Slot "+i,i));
 
 function status(t){$("status").textContent=t}
 function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+
 function escapeHTML(v){
 return String(v).replace(/[&<>"']/g,c=>({
 "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
 })[c]);
 }
+
 function formatToken(v){
 return Number(ethers.formatUnits(v,decimals)).toLocaleString("en-US",{maximumFractionDigits:8});
 }
-function withTimeout(p,ms=16000){
+
+function withTimeout(p,ms=45000){
 return Promise.race([
 p,
 new Promise((_,reject)=>setTimeout(()=>reject(Error("RPC timeout")),ms))
@@ -193,63 +200,104 @@ if(providers.length)return;
 
 for(const url of RPCS){
 try{
-const provider=new ethers.JsonRpcProvider(url,56,{staticNetwork:true,batchMaxCount:1});
-const chain=await withTimeout(provider.send("eth_chainId",[]),9000);
+const provider=new ethers.JsonRpcProvider(url,56,{
+staticNetwork:true,
+batchMaxCount:50,
+batchStallTime:10,
+batchMaxSize:1024*1024
+});
+
+const chain=await withTimeout(provider.send("eth_chainId",[]),12000);
 if(BigInt(chain)!==56n)continue;
+
 providers.push({
 url,
 provider,
 contract:new ethers.Contract(CONTRACT,ABI,provider)
 });
-}catch(e){console.warn(url,e.message)}
+}catch(e){
+console.warn(url,e.message);
 }
-if(!providers.length)throw Error("No BSC RPC available.");
+}
+
+if(!providers.length)throw Error("No BSC RPC available. Please retry.");
 $("rpc").textContent=new URL(providers[0].url).hostname;
 }
 
 async function read(fn){
 await connect();
 let last;
+
 for(const item of providers){
 try{
 const value=await withTimeout(fn(item.contract,item.provider));
 $("rpc").textContent=new URL(item.url).hostname;
 return value;
-}catch(e){last=e}
+}catch(e){
+last=e;
 }
-throw last||Error("RPC request failed");
+}
+
+throw last||Error("RPC request failed.");
 }
 
 async function batch(items,fn){
 const results=[];
-for(let i=0;i<items.length;i+=4){
-const part=items.slice(i,i+4);
-results.push(...await Promise.all(part.map(fn)));
-await delay(60);
+const CHUNK_SIZE=50;
+
+for(let i=0;i<items.length;i+=CHUNK_SIZE){
+const part=items.slice(i,i+CHUNK_SIZE);
+
+const chunkResults=await Promise.all(
+part.map(async(item)=>{
+return await fn(item);
+})
+);
+
+results.push(...chunkResults);
+
+$("teamStatus").textContent=
+"Blockchain batch checked: "+results.length+" / "+items.length;
+
+await delay(100);
 }
+
 return results;
+}
+
+function setProgress(done,total){
+const percent=total?Math.round(done/total*100):0;
+$("progressBar").style.width=percent+"%";
 }
 
 function downloadCSV(filename,rows){
 if(!rows.length)return alert("No data to export.");
+
 const keys=Object.keys(rows[0]);
 const quote=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+
 const lines=[
 keys.map(quote).join(","),
 ...rows.map(r=>keys.map(k=>quote(r[k])).join(","))
 ];
-const blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
+
+const blob=new Blob(["\ufeff"+lines.join("\r\n")],{
+type:"text/csv;charset=utf-8"
+});
+
 const url=URL.createObjectURL(blob);
 const a=document.createElement("a");
 a.href=url;
 a.download=filename;
 a.click();
+
 setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
 function resetReports(){
 team=[];
 slotResults=[];
+
 $("teamCount").textContent="—";
 $("teamStatus").textContent="Not loaded";
 $("teamDetails").innerHTML="";
@@ -258,10 +306,12 @@ $("slotDetails").innerHTML="";
 $("teamCsv").disabled=true;
 $("slotCsv").disabled=true;
 $("loadBtn").disabled=true;
+setProgress(0,1);
 }
 
 async function searchUser(){
 if(busy)return;
+
 const id=$("uid").value.trim();
 if(!/^[1-9]\d*$/.test(id))return status("Enter valid User ID.");
 
@@ -289,13 +339,15 @@ const t=new ethers.Contract(token,[
 "function decimals() view returns(uint8)",
 "function symbol() view returns(string)"
 ],p);
+
 const [d,s]=await Promise.all([t.decimals(),t.symbol()]);
 return {d:Number(d),s};
 });
+
 decimals=meta.d;
 tokenSymbol=meta.s;
 }catch(e){
-throw Error("Unable to verify token decimals; investment and income amounts cannot be displayed safely.");
+throw Error("Unable to verify token decimals.");
 }
 
 $("investment").textContent=formatToken(investment)+" "+tokenSymbol;
@@ -303,7 +355,6 @@ $("investment").textContent=formatToken(investment)+" "+tokenSymbol;
 if(BigInt(id)>=last)throw Error("User ID not registered.");
 
 const d=await read(c=>c.getUserDetails(id));
-
 if(d[0]===ZERO)throw Error("User not found.");
 
 selectedId=id;
@@ -328,16 +379,19 @@ $("directList").innerHTML=directs.length
 :"No direct leaders.";
 
 let earnings=0n;
+
 for(let slot=1;slot<=12;slot++){
 const m=await read(c=>c.usersXMatrix(selectedWallet,slot));
 earnings+=m[5];
 }
+
 $("matrixIncome").textContent=formatToken(earnings)+" "+tokenSymbol;
 
 await showMatrix();
 
 $("loadBtn").disabled=false;
 $("updated").textContent=new Date().toLocaleString();
+
 status("Profile loaded. Press LOAD COMPLETE TEAM & SLOT REPORT.");
 
 }catch(e){
@@ -358,16 +412,7 @@ read(c=>c.usersXMatrixReferrals(selectedWallet,slot)),
 read(c=>c.usersXMatrix(selectedWallet,slot))
 ]);
 
-const ids=await batch(refs,a=>read(async c=>{
-return c.addressToId?c.addressToId(a):0n;
-}).catch(async()=>{
-return read(async(c,p)=>{
-const helper=new ethers.Contract(CONTRACT,[
-"function addressToId(address) view returns(uint256)"
-],p);
-return helper.addressToId(a);
-});
-}));
+const ids=await batch(refs,a=>read(c=>c.addressToId(a)));
 
 $("matrixInfo").textContent=
 "Slot "+slot+" • Filled "+refs.length+"/14 • Reinvest "+matrix[1]+" • Historical placements "+matrix[4];
@@ -376,6 +421,7 @@ $("spots").innerHTML=Array.from({length:14},(_,i)=>{
 if(i>=refs.length){
 return '<div class="spot"><b>SPOT '+(i+1)+'</b><p>EMPTY</p></div>';
 }
+
 return '<div class="spot"><b>SPOT '+(i+1)+'</b>'+
 '<p>ID '+escapeHTML(ids[i])+'</p>'+
 '<small>'+escapeHTML(refs[i])+'</small></div>';
@@ -387,6 +433,15 @@ if(busy||!selectedId)return;
 
 busy=true;
 $("loadBtn").disabled=true;
+$("teamCsv").disabled=true;
+$("slotCsv").disabled=true;
+
+team=[];
+slotResults=[];
+$("teamDetails").innerHTML="";
+$("slotDetails").innerHTML="";
+$("slotTable").innerHTML='<tr><td colspan="3">Scanning team...</td></tr>';
+setProgress(0,1);
 
 try{
 const seen=new Set([selectedId]);
@@ -399,9 +454,12 @@ let capped=false;
 
 while(frontier.length&&depth<MAX_DEPTH){
 depth++;
+
 $("teamStatus").textContent="Scanning referral depth "+depth+"...";
 
-const lists=await batch(frontier,id=>read(c=>c.getDirectPartnerIds(id)));
+const lists=await batch(frontier,id=>
+read(c=>c.getDirectPartnerIds(id))
+);
 
 let next=[];
 let stop=false;
@@ -409,13 +467,22 @@ let stop=false;
 for(let i=0;i<lists.length&&!stop;i++){
 for(const child of lists[i]){
 const cid=child.toString();
+
 if(seen.has(cid))continue;
 
 seen.add(cid);
 next.push(cid);
-rows.push({userId:cid,parentId:frontier[i],depth});
+rows.push({
+userId:cid,
+parentId:frontier[i],
+depth
+});
 
-if(rows.length>=MAX){capped=true;stop=true;break}
+if(rows.length>=MAX){
+capped=true;
+stop=true;
+break;
+}
 }
 }
 
@@ -436,24 +503,43 @@ rows.map(r=>'<span class="tag">ID '+escapeHTML(r.userId)+'</span>').join("")+
 $("teamCsv").disabled=!rows.length;
 
 if(capped){
-$("teamStatus").textContent="Scan limit reached. Slot report not calculated because team is incomplete.";
-$("slotTable").innerHTML='<tr><td colspan="3">Incomplete team scan. Full slot counts unavailable.</td></tr>';
+$("teamStatus").textContent=
+"Scan limit reached. Slot report not calculated because team is incomplete.";
+
+$("slotTable").innerHTML=
+'<tr><td colspan="3">Incomplete team scan. Full slot counts unavailable.</td></tr>';
+
 return;
 }
 
-$("teamStatus").textContent="Referral scan complete: "+rows.length+" leaders. Checking active slots...";
+if(!rows.length){
+$("teamStatus").textContent="No referral downline found.";
+$("slotTable").innerHTML='<tr><td colspan="3">No team members found.</td></tr>';
+return;
+}
+
+$("teamStatus").textContent=
+"Referral scan complete: "+rows.length+" leaders. Checking active slots...";
 
 slotResults=[];
 let details="";
 
 for(let slot=1;slot<=12;slot++){
-$("teamStatus").textContent="Checking Slot "+slot+"/12 for "+rows.length+" leaders...";
+
+$("teamStatus").textContent=
+"Checking Slot "+slot+"/12 for "+rows.length+" leaders...";
 
 const activeFlags=await batch(rows,r=>
 read(c=>c.isUserSlotActive(r.userId,slot))
 );
 
-const activeLeaders=rows.filter((r,i)=>activeFlags[i]===true);
+if(activeFlags.length!==rows.length){
+throw Error("Incomplete response for Slot "+slot);
+}
+
+const activeLeaders=rows.filter((r,i)=>
+activeFlags[i]===true
+);
 
 slotResults.push({
 slot,
@@ -461,27 +547,44 @@ activeLeaders:activeLeaders.length,
 teamChecked:rows.length
 });
 
-details+='<details><summary>SLOT '+slot+' — '+activeLeaders.length+' ACTIVE LEADERS</summary>'+
-(activeLeaders.map(r=>'<span class="tag">ID '+escapeHTML(r.userId)+'</span>').join("")||"No active leaders")+
+details+='<details><summary>SLOT '+slot+
+' — '+activeLeaders.length+' ACTIVE LEADERS</summary>'+
+(activeLeaders.map(r=>
+'<span class="tag">ID '+escapeHTML(r.userId)+'</span>'
+).join("")||"No active leaders")+
 '</details>';
 
 $("slotTable").innerHTML=slotResults.map(r=>
 '<tr><td><b>SLOT '+r.slot+'</b></td>'+
-'<td style="color:#f3c66a;font-weight:bold">'+r.activeLeaders.toLocaleString()+'</td>'+
+'<td style="color:#f3c66a;font-weight:bold">'+
+r.activeLeaders.toLocaleString()+'</td>'+
 '<td>'+r.teamChecked.toLocaleString()+'</td></tr>'
 ).join("");
 
 $("slotDetails").innerHTML=details;
+
+setProgress(slot,12);
 }
 
 $("slotCsv").disabled=false;
-$("teamStatus").textContent="Complete: "+rows.length+" leaders checked across all 12 slots.";
+
+$("teamStatus").textContent=
+"Complete: "+rows.length+" leaders checked across all 12 slots.";
+
 $("updated").textContent=new Date().toLocaleString();
 
 }catch(e){
-$("teamStatus").textContent="ERROR: "+e.message+" — Slot counts may be incomplete.";
+
+$("teamStatus").textContent=
+"ERROR: "+e.message+" — Report incomplete. Please retry.";
+
 $("slotCsv").disabled=true;
-$("slotTable").innerHTML='<tr><td colspan="3">Scan failed. Please retry.</td></tr>';
+
+$("slotTable").innerHTML=
+'<tr><td colspan="3">Scan failed. Full report not available.</td></tr>';
+
+console.error(e);
+
 }finally{
 busy=false;
 $("loadBtn").disabled=false;
