@@ -7,7 +7,7 @@
 <title>B-TITAN Ultimate Team Explorer</title>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 <style>
-:root{--gold:#f3c66a;--bg:#070b13;--card:#121b2b;--line:#344258;--green:#55dda4;--muted:#aab8ca}
+:root{--gold:#f3c66a;--bg:#070b13;--line:#344258;--green:#55dda4;--muted:#aab8ca}
 *{box-sizing:border-box}
 body{margin:0;background:radial-gradient(circle at top,#202b40,#070b13 55%);color:#fff;font:14px Arial,sans-serif}
 header{text-align:center;padding:32px 14px;background:linear-gradient(135deg,#182337,#080c15);border-bottom:2px solid var(--gold)}
@@ -15,7 +15,7 @@ header{text-align:center;padding:32px 14px;background:linear-gradient(135deg,#18
 h1{font-size:clamp(22px,5vw,34px);color:var(--gold);margin:8px 0}
 header p{color:var(--muted);letter-spacing:1px}
 main{max-width:1150px;margin:auto;padding:12px}
-section{background:linear-gradient(135deg,#152033,#0e1522);border:1px solid #344258;border-radius:16px;padding:17px;margin:15px 0;box-shadow:0 12px 28px #0005}
+section{background:linear-gradient(135deg,#152033,#0e1522);border:1px solid var(--line);border-radius:16px;padding:17px;margin:15px 0;box-shadow:0 12px 28px #0005}
 h2{color:var(--gold);font-size:16px;margin:0 0 15px}
 input,select{background:#090f1a;border:1px solid #475875;color:white;border-radius:10px;padding:14px;font-size:16px;width:100%;margin:7px 0 12px}
 button{background:linear-gradient(135deg,#ffe4a1,#d9a63c);border:0;border-radius:10px;padding:13px 17px;font-weight:bold;color:#16120a;cursor:pointer;margin:5px 5px 5px 0}
@@ -28,10 +28,10 @@ button:disabled{opacity:.45;cursor:wait}
 #status{color:var(--gold);line-height:1.7;overflow-wrap:anywhere}
 .muted{color:var(--muted);font-size:12px;line-height:1.7}
 table{border-collapse:collapse;width:100%;min-width:440px}
-th,td{border-bottom:1px solid #344258;text-align:left;padding:12px 9px;font-size:12px}
+th,td{border-bottom:1px solid var(--line);text-align:left;padding:12px 9px;font-size:12px}
 th{background:#202c3e;color:var(--gold)}
 .scroll{overflow-x:auto}
-details{border:1px solid #344258;border-radius:10px;padding:11px;margin:9px 0}
+details{border:1px solid var(--line);border-radius:10px;padding:11px;margin:9px 0}
 summary{color:var(--gold);font-weight:bold;cursor:pointer}
 .tag{display:inline-block;padding:7px;margin:4px;background:#1c2b41;border-radius:8px;font-size:12px;overflow-wrap:anywhere}
 .spots{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
@@ -129,7 +129,7 @@ footer{text-align:center;color:#9daec4;padding:25px}
 </section>
 
 <div class="warn">
-Read-only blockchain dashboard. Slot counts use the contract's isUserSlotActive function for every member of the selected user's referral downline. The selected root ID is excluded. A leader may appear in multiple slots. Historical matrix cycles are not included. If RPC requests fail, the report will show an error rather than treating missing results as zero.
+Read-only blockchain dashboard. Slot counts are calculated using the contract's isUserSlotActive function through Multicall3. The selected root ID is excluded. A leader may appear in multiple slots. Historical matrix cycles are not included. A report is complete only when every requested call succeeds.
 </div>
 </main>
 
@@ -137,6 +137,7 @@ Read-only blockchain dashboard. Slot counts use the contract's isUserSlotActive 
 
 <script>
 const CONTRACT="0xD6759d47Fccdef7b8E318479cEC4D128366f2a44";
+const MULTICALL="0xca11bde05977b3631167028862be2a173976ca11";
 
 const RPCS=[
 "https://bsc-dataseed.bnbchain.org",
@@ -158,8 +159,15 @@ const ABI=[
 "function usersXMatrixReferrals(address,uint8) view returns(address[])"
 ];
 
+const MC_ABI=[
+"function aggregate3((address target,bool allowFailure,bytes callData)[] calls) payable returns ((bool success,bytes returnData)[] returnData)"
+];
+
 const $=id=>document.getElementById(id);
 const ZERO="0x0000000000000000000000000000000000000000";
+
+const contractInterface=new ethers.Interface(ABI);
+const multicallInterface=new ethers.Interface(MC_ABI);
 
 let providers=[];
 let selectedId=null;
@@ -187,7 +195,7 @@ function formatToken(v){
 return Number(ethers.formatUnits(v,decimals)).toLocaleString("en-US",{maximumFractionDigits:8});
 }
 
-function withTimeout(p,ms=45000){
+function withTimeout(p,ms=30000){
 return Promise.race([
 p,
 new Promise((_,reject)=>setTimeout(()=>reject(Error("RPC timeout")),ms))
@@ -202,25 +210,19 @@ for(const url of RPCS){
 try{
 const provider=new ethers.JsonRpcProvider(url,56,{
 staticNetwork:true,
-batchMaxCount:50,
-batchStallTime:10,
-batchMaxSize:1024*1024
+batchMaxCount:1
 });
 
-const chain=await withTimeout(provider.send("eth_chainId",[]),12000);
+const chain=await withTimeout(provider.send("eth_chainId",[]),10000);
 if(BigInt(chain)!==56n)continue;
 
-providers.push({
-url,
-provider,
-contract:new ethers.Contract(CONTRACT,ABI,provider)
-});
+providers.push({url,provider});
 }catch(e){
-console.warn(url,e.message);
+console.warn("RPC unavailable:",url,e.message);
 }
 }
 
-if(!providers.length)throw Error("No BSC RPC available. Please retry.");
+if(!providers.length)throw Error("No BSC RPC available.");
 $("rpc").textContent=new URL(providers[0].url).hostname;
 }
 
@@ -230,39 +232,104 @@ let last;
 
 for(const item of providers){
 try{
-const value=await withTimeout(fn(item.contract,item.provider));
+const c=new ethers.Contract(CONTRACT,ABI,item.provider);
+const value=await withTimeout(fn(c,item.provider));
 $("rpc").textContent=new URL(item.url).hostname;
 return value;
 }catch(e){
 last=e;
+console.warn("RPC read failed:",item.url,e.message);
 }
 }
 
 throw last||Error("RPC request failed.");
 }
 
-async function batch(items,fn){
-const results=[];
-const CHUNK_SIZE=50;
+/*
+Multicall3 helper.
+Every chunk is one eth_call request.
+If a request fails, retry using smaller chunks.
+*/
+async function multicallRead(specs){
+await connect();
+if(!specs.length)return [];
 
-for(let i=0;i<items.length;i+=CHUNK_SIZE){
-const part=items.slice(i,i+CHUNK_SIZE);
+const output=[];
+let position=0;
 
-const chunkResults=await Promise.all(
-part.map(async(item)=>{
-return await fn(item);
-})
+async function runChunk(part){
+let lastError;
+
+for(const item of providers){
+try{
+const calls=part.map(s=>({
+target:CONTRACT,
+allowFailure:false,
+callData:contractInterface.encodeFunctionData(s.method,s.args||[])
+}));
+
+const data=multicallInterface.encodeFunctionData("aggregate3",[calls]);
+
+const raw=await withTimeout(item.provider.call({
+to:MULTICALL,
+data
+}),45000);
+
+const decoded=multicallInterface.decodeFunctionResult("aggregate3",raw)[0];
+
+if(decoded.length!==part.length){
+throw Error("Multicall response length mismatch.");
+}
+
+const values=decoded.map((result,i)=>{
+if(!result.success){
+throw Error("Multicall subcall failed: "+part[i].method);
+}
+return contractInterface.decodeFunctionResult(
+part[i].method,
+result.returnData
 );
+});
 
-results.push(...chunkResults);
+$("rpc").textContent=new URL(item.url).hostname;
+return values;
 
+}catch(e){
+lastError=e;
+console.warn("Multicall failed:",item.url,e.message);
+}
+}
+
+throw lastError||Error("All RPC providers failed.");
+}
+
+async function processPart(part){
+try{
+return await runChunk(part);
+}catch(e){
+if(part.length<=1)throw e;
+
+const middle=Math.floor(part.length/2);
+const left=await processPart(part.slice(0,middle));
+const right=await processPart(part.slice(middle));
+return left.concat(right);
+}
+}
+
+while(position<specs.length){
+const part=specs.slice(position,position+40);
+const values=await processPart(part);
+output.push(...values);
+position+=part.length;
+
+if($("teamStatus")){
 $("teamStatus").textContent=
-"Blockchain batch checked: "+results.length+" / "+items.length;
-
+"Multicall checked "+position+" / "+specs.length+" requests";
+}
 await delay(100);
 }
 
-return results;
+return output;
 }
 
 function setProgress(done,total){
@@ -297,7 +364,6 @@ setTimeout(()=>URL.revokeObjectURL(url),1000);
 function resetReports(){
 team=[];
 slotResults=[];
-
 $("teamCount").textContent="—";
 $("teamStatus").textContent="Not loaded";
 $("teamDetails").innerHTML="";
@@ -333,23 +399,17 @@ read(c=>c.BTCB_TOKEN_ADDRESS())
 
 $("registered").textContent=(last-1n).toLocaleString();
 
-try{
 const meta=await read(async(c,p)=>{
 const t=new ethers.Contract(token,[
 "function decimals() view returns(uint8)",
 "function symbol() view returns(string)"
 ],p);
-
 const [d,s]=await Promise.all([t.decimals(),t.symbol()]);
 return {d:Number(d),s};
 });
 
 decimals=meta.d;
 tokenSymbol=meta.s;
-}catch(e){
-throw Error("Unable to verify token decimals.");
-}
-
 $("investment").textContent=formatToken(investment)+" "+tokenSymbol;
 
 if(BigInt(id)>=last)throw Error("User ID not registered.");
@@ -379,7 +439,6 @@ $("directList").innerHTML=directs.length
 :"No direct leaders.";
 
 let earnings=0n;
-
 for(let slot=1;slot<=12;slot++){
 const m=await read(c=>c.usersXMatrix(selectedWallet,slot));
 earnings+=m[5];
@@ -391,7 +450,6 @@ await showMatrix();
 
 $("loadBtn").disabled=false;
 $("updated").textContent=new Date().toLocaleString();
-
 status("Profile loaded. Press LOAD COMPLETE TEAM & SLOT REPORT.");
 
 }catch(e){
@@ -412,7 +470,13 @@ read(c=>c.usersXMatrixReferrals(selectedWallet,slot)),
 read(c=>c.usersXMatrix(selectedWallet,slot))
 ]);
 
-const ids=await batch(refs,a=>read(c=>c.addressToId(a)));
+const specs=refs.map(a=>({
+method:"addressToId",
+args:[a]
+}));
+
+const decoded=await multicallRead(specs);
+const ids=decoded.map(x=>x[0]);
 
 $("matrixInfo").textContent=
 "Slot "+slot+" • Filled "+refs.length+"/14 • Reinvest "+matrix[1]+" • Historical placements "+matrix[4];
@@ -421,7 +485,6 @@ $("spots").innerHTML=Array.from({length:14},(_,i)=>{
 if(i>=refs.length){
 return '<div class="spot"><b>SPOT '+(i+1)+'</b><p>EMPTY</p></div>';
 }
-
 return '<div class="spot"><b>SPOT '+(i+1)+'</b>'+
 '<p>ID '+escapeHTML(ids[i])+'</p>'+
 '<small>'+escapeHTML(refs[i])+'</small></div>';
@@ -454,12 +517,15 @@ let capped=false;
 
 while(frontier.length&&depth<MAX_DEPTH){
 depth++;
-
 $("teamStatus").textContent="Scanning referral depth "+depth+"...";
 
-const lists=await batch(frontier,id=>
-read(c=>c.getDirectPartnerIds(id))
-);
+const specs=frontier.map(id=>({
+method:"getDirectPartnerIds",
+args:[id]
+}));
+
+const listsDecoded=await multicallRead(specs);
+const lists=listsDecoded.map(x=>x[0]);
 
 let next=[];
 let stop=false;
@@ -467,7 +533,6 @@ let stop=false;
 for(let i=0;i<lists.length&&!stop;i++){
 for(const child of lists[i]){
 const cid=child.toString();
-
 if(seen.has(cid))continue;
 
 seen.add(cid);
@@ -503,12 +568,8 @@ rows.map(r=>'<span class="tag">ID '+escapeHTML(r.userId)+'</span>').join("")+
 $("teamCsv").disabled=!rows.length;
 
 if(capped){
-$("teamStatus").textContent=
-"Scan limit reached. Slot report not calculated because team is incomplete.";
-
-$("slotTable").innerHTML=
-'<tr><td colspan="3">Incomplete team scan. Full slot counts unavailable.</td></tr>';
-
+$("teamStatus").textContent="Scan limit reached. Slot report not calculated because team is incomplete.";
+$("slotTable").innerHTML='<tr><td colspan="3">Incomplete team scan.</td></tr>';
 return;
 }
 
@@ -525,21 +586,22 @@ slotResults=[];
 let details="";
 
 for(let slot=1;slot<=12;slot++){
-
 $("teamStatus").textContent=
-"Checking Slot "+slot+"/12 for "+rows.length+" leaders...";
+"Preparing Slot "+slot+"/12 for "+rows.length+" leaders...";
 
-const activeFlags=await batch(rows,r=>
-read(c=>c.isUserSlotActive(r.userId,slot))
-);
+const specs=rows.map(r=>({
+method:"isUserSlotActive",
+args:[r.userId,slot]
+}));
+
+const decoded=await multicallRead(specs);
+const activeFlags=decoded.map(x=>x[0]);
 
 if(activeFlags.length!==rows.length){
 throw Error("Incomplete response for Slot "+slot);
 }
 
-const activeLeaders=rows.filter((r,i)=>
-activeFlags[i]===true
-);
+const activeLeaders=rows.filter((r,i)=>activeFlags[i]===true);
 
 slotResults.push({
 slot,
@@ -562,29 +624,21 @@ r.activeLeaders.toLocaleString()+'</td>'+
 ).join("");
 
 $("slotDetails").innerHTML=details;
-
 setProgress(slot,12);
 }
 
 $("slotCsv").disabled=false;
-
 $("teamStatus").textContent=
 "Complete: "+rows.length+" leaders checked across all 12 slots.";
-
 $("updated").textContent=new Date().toLocaleString();
 
 }catch(e){
-
 $("teamStatus").textContent=
 "ERROR: "+e.message+" — Report incomplete. Please retry.";
-
 $("slotCsv").disabled=true;
-
 $("slotTable").innerHTML=
 '<tr><td colspan="3">Scan failed. Full report not available.</td></tr>';
-
 console.error(e);
-
 }finally{
 busy=false;
 $("loadBtn").disabled=false;
